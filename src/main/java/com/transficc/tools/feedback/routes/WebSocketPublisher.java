@@ -7,7 +7,7 @@ import java.util.concurrent.ConcurrentLinkedDeque;
 import com.transficc.tools.feedback.messaging.PublishableIteration;
 import com.transficc.tools.feedback.messaging.PublishableJob;
 import com.transficc.tools.feedback.messaging.PublishableStatus;
-import com.transficc.tools.feedback.util.SafeSerisalisation;
+import com.transficc.tools.jenkins.SafeSerisalisation;
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 
 

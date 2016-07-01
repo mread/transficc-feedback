@@ -1,6 +1,7 @@
 package com.transficc.tools.feedback;
 
 import com.transficc.tools.feedback.messaging.MessageBus;
+import com.transficc.tools.jenkins.JobStatus;
 
 import org.junit.Before;
 import org.junit.Test;

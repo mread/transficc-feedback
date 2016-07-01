@@ -6,12 +6,14 @@ import java.util.concurrent.LinkedBlockingQueue;
 
 import com.transficc.infrastructure.collections.Result;
 import com.transficc.logging.LoggingService;
-import com.transficc.tools.feedback.jenkins.Jenkins;
-import com.transficc.tools.feedback.jenkins.LatestBuildInformation;
-import com.transficc.tools.feedback.jenkins.serialized.JobTestResults;
 import com.transficc.tools.feedback.messaging.MessageBus;
 import com.transficc.tools.feedback.messaging.PublishableJob;
-import com.transficc.tools.feedback.util.ClockService;
+import com.transficc.tools.jenkins.ClockService;
+import com.transficc.tools.jenkins.Jenkins;
+import com.transficc.tools.jenkins.JobStatus;
+import com.transficc.tools.jenkins.JobsTestResults;
+import com.transficc.tools.jenkins.LatestBuildInformation;
+import com.transficc.tools.jenkins.serialized.JobTestResults;
 
 import org.junit.Before;
 import org.junit.Test;

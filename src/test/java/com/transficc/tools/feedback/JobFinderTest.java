@@ -1,4 +1,4 @@
-package com.transficc.tools.feedback.jenkins;
+package com.transficc.tools.feedback;
 
 import java.util.Arrays;
 import java.util.Collections;
@@ -9,29 +9,23 @@ import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
 import com.transficc.infrastructure.collections.Result;
-import com.transficc.tools.feedback.HttpClientFacade;
-import com.transficc.tools.feedback.JobPrioritiesRepository;
-import com.transficc.tools.feedback.JobRepository;
-import com.transficc.tools.feedback.JobService;
-import com.transficc.tools.feedback.JobStatus;
-import com.transficc.tools.feedback.MessageBuilder;
-import com.transficc.tools.feedback.jenkins.serialized.Job;
-import com.transficc.tools.feedback.jenkins.serialized.Jobs;
 import com.transficc.tools.feedback.messaging.MessageBus;
 import com.transficc.tools.feedback.messaging.PublishableJob;
-import com.transficc.tools.feedback.util.ClockService;
+import com.transficc.tools.jenkins.ClockService;
+import com.transficc.tools.jenkins.HttpClientFacade;
+import com.transficc.tools.jenkins.Jenkins;
+import com.transficc.tools.jenkins.JobStatus;
+import com.transficc.tools.jenkins.serialized.Job;
+import com.transficc.tools.jenkins.serialized.Jobs;
 
+import org.hamcrest.MatcherAssert;
 import org.hamcrest.core.Is;
 import org.junit.Before;
 import org.junit.Test;
+import org.mockito.BDDMockito;
+import org.mockito.Matchers;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
-
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.core.Is.is;
-import static org.mockito.BDDMockito.given;
-import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.anyLong;
 
 public class JobFinderTest
 {
@@ -51,7 +45,7 @@ public class JobFinderTest
     public void setup()
     {
         MockitoAnnotations.initMocks(this);
-        given(scheduledExecutorService.scheduleAtFixedRate(any(Runnable.class), anyLong(), anyLong(), any(TimeUnit.class))).willReturn(scheduledFuture);
+        BDDMockito.given(scheduledExecutorService.scheduleAtFixedRate(Matchers.any(Runnable.class), Matchers.anyLong(), Matchers.anyLong(), Matchers.any(TimeUnit.class))).willReturn(scheduledFuture);
         jobRepository = new JobRepository();
         final LinkedBlockingQueue<PublishableJob> messageBusQueue = new LinkedBlockingQueue<>();
         final MessageBus messageBus = new MessageBus(messageBusQueue,
@@ -73,20 +67,20 @@ public class JobFinderTest
                 setField("jobs", Collections.singletonList(new MessageBuilder(Job.class).setField("name", "Tom").setField("url", "stuff.com").setField("color", "blue").build())).
                 build();
 
-        given(httpClient.get(URL + "/api/json?tree=jobs[name,url,color,lastBuild[number,url]]", Jobs.class)).willReturn(Result.success(jobs1), Result.success(jobs2));
+        BDDMockito.given(httpClient.get(URL + "/api/json?tree=jobs[name,url,color,lastBuild[number,url]]", Jobs.class)).willReturn(Result.success(jobs1), Result.success(jobs2));
 
         jobFinder.run();
         jobFinder.run();
 
         final List<PublishableJob> publishableJobs = jobRepository.getPublishableJobs();
 
-        assertThat(publishableJobs.size(), is(2));
-        assertThat(publishableJobs.get(0).getName(), is("Chinar"));
-        assertThat(publishableJobs.get(0).getUrl(), is("stuff.com"));
-        assertThat(publishableJobs.get(0).getJobStatus(), Is.is(JobStatus.ERROR));
-        assertThat(publishableJobs.get(1).getName(), is("Tom"));
-        assertThat(publishableJobs.get(1).getUrl(), is("stuff.com"));
-        assertThat(publishableJobs.get(1).getJobStatus(), is(JobStatus.SUCCESS));
+        MatcherAssert.assertThat(publishableJobs.size(), Is.is(2));
+        MatcherAssert.assertThat(publishableJobs.get(0).getName(), Is.is("Chinar"));
+        MatcherAssert.assertThat(publishableJobs.get(0).getUrl(), Is.is("stuff.com"));
+        MatcherAssert.assertThat(publishableJobs.get(0).getJobStatus(), Is.is(JobStatus.ERROR));
+        MatcherAssert.assertThat(publishableJobs.get(1).getName(), Is.is("Tom"));
+        MatcherAssert.assertThat(publishableJobs.get(1).getUrl(), Is.is("stuff.com"));
+        MatcherAssert.assertThat(publishableJobs.get(1).getJobStatus(), Is.is(JobStatus.SUCCESS));
 
     }
 
@@ -101,19 +95,19 @@ public class JobFinderTest
                 setField("jobs", Collections.singletonList(new MessageBuilder(Job.class).setField("name", "Chinar").setField("url", "stuff.com").setField("color", "red").build())).
                 build();
 
-        given(httpClient.get(URL + "/api/json?tree=jobs[name,url,color,lastBuild[number,url]]", Jobs.class)).willReturn(Result.success(jobs1), Result.success(jobs2));
+        BDDMockito.given(httpClient.get(URL + "/api/json?tree=jobs[name,url,color,lastBuild[number,url]]", Jobs.class)).willReturn(Result.success(jobs1), Result.success(jobs2));
 
         jobFinder.run();
         jobFinder.run();
 
         final List<PublishableJob> publishableJobs = jobRepository.getPublishableJobs();
 
-        assertThat(publishableJobs.size(), is(2));
-        assertThat(publishableJobs.get(0).getName(), is("Chinar"));
-        assertThat(publishableJobs.get(0).getUrl(), is("stuff.com"));
-        assertThat(publishableJobs.get(0).getJobStatus(), is(JobStatus.ERROR));
-        assertThat(publishableJobs.get(1).getName(), is("Tom"));
-        assertThat(publishableJobs.get(1).getUrl(), is("stuff.com"));
-        assertThat(publishableJobs.get(1).getJobStatus(), is(JobStatus.SUCCESS));
+        MatcherAssert.assertThat(publishableJobs.size(), Is.is(2));
+        MatcherAssert.assertThat(publishableJobs.get(0).getName(), Is.is("Chinar"));
+        MatcherAssert.assertThat(publishableJobs.get(0).getUrl(), Is.is("stuff.com"));
+        MatcherAssert.assertThat(publishableJobs.get(0).getJobStatus(), Is.is(JobStatus.ERROR));
+        MatcherAssert.assertThat(publishableJobs.get(1).getName(), Is.is("Tom"));
+        MatcherAssert.assertThat(publishableJobs.get(1).getUrl(), Is.is("stuff.com"));
+        MatcherAssert.assertThat(publishableJobs.get(1).getJobStatus(), Is.is(JobStatus.SUCCESS));
     }
 }

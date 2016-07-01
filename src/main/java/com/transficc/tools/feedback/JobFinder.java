@@ -1,11 +1,9 @@
-package com.transficc.tools.feedback.jenkins;
+package com.transficc.tools.feedback;
 
 import com.transficc.infrastructure.collections.Result;
-import com.transficc.tools.feedback.Job;
-import com.transficc.tools.feedback.JobPrioritiesRepository;
-import com.transficc.tools.feedback.JobService;
-import com.transficc.tools.feedback.JobStatus;
-import com.transficc.tools.feedback.jenkins.serialized.Jobs;
+import com.transficc.tools.jenkins.Jenkins;
+import com.transficc.tools.jenkins.JobStatus;
+import com.transficc.tools.jenkins.serialized.Jobs;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

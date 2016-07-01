@@ -22,9 +22,10 @@ import com.transficc.tools.feedback.messaging.MessageSubscriber;
 import com.transficc.tools.feedback.messaging.PublishableJob;
 import com.transficc.tools.feedback.routes.Routes;
 import com.transficc.tools.feedback.routes.WebSocketPublisher;
-import com.transficc.tools.feedback.util.ClockService;
+import com.transficc.tools.jenkins.ClockService;
 import com.transficc.tools.feedback.util.FeedbackProperties;
-import com.transficc.tools.feedback.util.SafeSerisalisation;
+import com.transficc.tools.jenkins.SafeSerisalisation;
+import com.transficc.tools.jenkins.HttpClientFacade;
 
 import org.apache.http.impl.client.HttpClients;
 
