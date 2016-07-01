@@ -1,0 +1,33 @@
+<div id="{{name}}" class="job build-status-{{jobStatus}}" data-title="{{name}}" data-job-status="{{jobStatus}}" data-priority="{{priority}}">
+    <div class="row">
+        <div class="col-md-12">
+            <table>
+                <tr>
+                    <td style="vertical-align:top;">
+                        <div><a href="{{url}}{{buildNumber}}">{{revision}}</a></div>
+                        <div><a href="{{url}}">{{name}}</a></div>
+                        <div class="test-report" {{#shouldHideTestReport}}hidden{{/shouldHideTestReport}}>
+                            <span>Passed: {{passCount}}</span>
+                            <span>Failed: {{failCount}}</span>
+                            <span>Ignored: {{skipCount}}</span>
+                        </div>
+                    </td>
+                    <td style="vertical-align:top;">
+                        {{#comments}}
+                            {{.}}<br/>
+                        {{/comments}}
+                    </td>
+                </tr>
+            </table>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-12">
+            <div class="progress" {{#shouldHideProgressBar}}hidden{{/shouldHideProgressBar}}>
+                <div class="progress-bar progress-bar-warning" role="progressbar" aria-valuenow="{{jobCompletionPercentage}}" aria-valuemin="0" aria-valuemax="100" style="width: {{jobCompletionPercentage}}%">
+                    <span class="sr-only">{{jobCompletionPercentage}}% Complete</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

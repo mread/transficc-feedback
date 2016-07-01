@@ -1,0 +1,67 @@
+plugins {
+    id "com.moowork.node" version "0.12"
+    id "com.moowork.gulp" version "0.12"
+}
+
+apply plugin: 'com.moowork.node'
+apply plugin: 'com.moowork.gulp'
+apply plugin: 'idea'
+
+idea {
+    module {
+        excludeDirs += file('node_modules')
+    }
+}
+
+node {
+    version = '4.3.2'
+    download = true
+}
+
+gulp {
+    // Set the directory where gulpfile.js should be found
+    workDir = file("${project.projectDir}")
+
+    // Whether colors should output on the terminal
+    colors = true
+
+    // Whether output from Gulp should be buffered - useful when running tasks in parallel
+    bufferOutput = false
+}
+
+//gulp_build.dependsOn 'installGulp'
+gulp_build.dependsOn 'npmInstall'
+
+compileJava.dependsOn {
+    gulp_build
+}
+
+
+shadowJar {
+    manifest.attributes('Main-Class': 'com.transficc.tools.feedback.FeedbackMain')
+}
+
+
+def libs = rootProject.ext.libs
+
+dependencies {
+    compile project(':collections')
+    compile project(':threading')
+    compile project(':logging')
+    runtime libs.'antlr4-runtime'
+    compile libs.'commons-codec'
+    compile libs.'commons-logging'
+    compile libs.'findbugs-annotations'
+    compile libs.'handlebars'
+    compile libs.'httpclient'
+    compile libs.'httpcore'
+    compile libs.'jackson'
+    compile libs.'jcip-annotations'
+    compile libs.'logging'
+    compile libs.'netty'
+    compile libs.'vertx'
+    runtime libs.'commons-lang3'
+
+    testCompile project(':logging')
+    testCompile libs.'tf-test'
+}

@@ -1,0 +1,77 @@
+<html>
+<head>
+    <title>Feedback</title>
+    <link rel="stylesheet" type="text/css" href="/static/bootstrap.css">
+    <link rel="stylesheet" type="text/css" href="/static/styling.css">
+</head>
+<body>
+<div id="disconnected" class="alert alert-danger" style="display: none;">
+    <h3>Disconnected</h3>
+</div>
+<div class="container">
+    <div class="page-header">
+        <h1>Feedback</h1>
+        <h4>Iteration <span id="iteration">{{iteration}}</span>
+            <small><a id="set-iteration" href="#">Set Iteration</a></small>
+        </h4>
+        <h4>
+            <small><a id="status-update" href="#">Status Update</a></small>
+        </h4>
+    </div>
+</div>
+<div class="container-fluid">
+    <div class="jobs">
+        <div class="row">
+            {{#each jobs}}
+                {{#if shouldBeFullScreen}}
+                <div class="col-md-12">
+                {{else}}
+                <div class="col-md-2">
+                {{/if}}
+                <div id="{{name}}" class="job build-status-{{jobStatus}}" data-title="{{name}}" data-job-status="{{jobStatus}}" data-priority="{{priority}}">
+                    <div class="row">
+                        <div class="col-md-12">
+                            <table>
+                                <tr>
+                                    <td style="vertical-align:top;">
+                                        <div><a href="{{url}}{{buildNumber}}">{{revision}}</a></div>
+                                        <div><a href="{{url}}">{{name}}</a></div>
+                                        <div class="test-report" {{#unless jobsTestResults}}hidden{{/unless}}>
+                                                <span>Passed: {{jobsTestResults.passCount}}</span>
+                                                <span>Failed: {{jobsTestResults.failCount}}</span>
+                                                <span>Ignored: {{jobsTestResults.skipCount}}</span>
+                                        </div>
+                                    </td>
+                                    <td style="vertical-align:top;">
+                                        {{#each comments}}
+                                            {{.}}<br/>
+                                        {{/each}}
+                                    </td>
+                                </tr>
+                            </table>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-12">
+                            <div class="progress" {{#if shouldHideProgressBar}}hidden{{/if}}>
+                                <div class="progress-bar progress-bar-warning" role="progressbar" aria-valuenow="{{jobCompletionPercentage}}" aria-valuemin="0" aria-valuemax="100" style="width: {{jobCompletionPercentage}}%">
+                                    <span class="sr-only">{{jobCompletionPercentage}}% Complete</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {{/each}}
+        </div>
+        </div>
+    </div>
+    <div id="update" style="display: none;">
+        <span class="title">BREAKING NEWS:</span>
+        &nbsp;
+        <span class="message">{{status}}</span>
+    </div>
+    <script src="/static/app.js"></script>
+    <script src="/static/bootstrap.min.js"></script>
+</body>
+</html>

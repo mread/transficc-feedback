@@ -1,0 +1,40 @@
+{
+  "name": "feedback",
+  "version": "0.0.1",
+  "dependencies": {
+    "jquery": {
+      "version": "2.2.0",
+      "from": "jquery@2.2.0",
+      "resolved": "https://registry.npmjs.org/jquery/-/jquery-2.2.0.tgz"
+    },
+    "lodash": {
+      "version": "4.3.0",
+      "from": "lodash@4.3.0",
+      "resolved": "https://registry.npmjs.org/lodash/-/lodash-4.3.0.tgz"
+    },
+    "hogan.js": {
+      "version": "3.0.2",
+      "from": "hogan.js@*",
+      "resolved": "https://registry.npmjs.org/hogan.js/-/hogan.js-3.0.2.tgz",
+      "dependencies": {
+        "nopt": {
+          "version": "1.0.10",
+          "from": "nopt@1.0.10",
+          "resolved": "https://registry.npmjs.org/nopt/-/nopt-1.0.10.tgz",
+          "dependencies": {
+            "abbrev": {
+              "version": "1.0.7",
+              "from": "abbrev@1",
+              "resolved": "https://registry.npmjs.org/abbrev/-/abbrev-1.0.7.tgz"
+            }
+          }
+        },
+        "mkdirp": {
+          "version": "0.3.0",
+          "from": "mkdirp@0.3.0",
+          "resolved": "https://registry.npmjs.org/mkdirp/-/mkdirp-0.3.0.tgz"
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,59 @@
+
+body, table {
+    font-size: 16px;
+    font-family: monospace;
+}
+.job a:link,
+.job a:active,
+.job a:visited,
+.job a:hover {
+    color: #000000;
+}
+
+.build-status-success {
+    background-color: #33cc33;
+}
+
+.build-status-error {
+    background-color: #EE2222;
+}
+
+.build-status-disabled {
+    background-color: #D3D3D3;
+}
+.row {
+    margin-left: 0px;
+    margin-right: 0px;
+}
+
+.col-md-2, .col-md-12 {
+    padding-left: 0px;
+    padding-right: 0px;
+}
+
+.job {
+    color: #000000;
+    padding: 5px;
+    margin: 2px;
+    border-radius: 5px;
+}
+
+.test-report {
+    font-size: 9px;
+}
+
+#update {
+    background-color: #000000;
+    color: #FFFFFF;
+    width: 100%;
+    z-index: 100;
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    padding: 2px;
+}
+
+#update .title {
+    background-color: #EE2222;
+    padding: 1px;
+}
