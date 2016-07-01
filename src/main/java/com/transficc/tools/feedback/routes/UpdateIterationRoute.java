@@ -1,7 +1,7 @@
 package com.transficc.tools.feedback.routes;
 
 import com.transficc.tools.feedback.IterationRepository;
-import com.transficc.tools.jenkins.SafeSerisalisation;
+import com.transficc.tools.jenkins.SafeSerialisation;
 
 
 import io.vertx.core.Handler;
@@ -10,18 +10,18 @@ import io.vertx.ext.web.RoutingContext;
 public class UpdateIterationRoute implements Handler<RoutingContext>
 {
     private final IterationRepository iterationRepository;
-    private final SafeSerisalisation safeSerisalisation;
+    private final SafeSerialisation safeSerialisation;
 
-    public UpdateIterationRoute(final IterationRepository iterationRepository, final SafeSerisalisation safeSerisalisation)
+    public UpdateIterationRoute(final IterationRepository iterationRepository, final SafeSerialisation safeSerialisation)
     {
         this.iterationRepository = iterationRepository;
-        this.safeSerisalisation = safeSerisalisation;
+        this.safeSerialisation = safeSerialisation;
     }
 
     @Override
     public void handle(final RoutingContext routingContext)
     {
-        final IterationUpdate iteration = safeSerisalisation.deserialise(routingContext.getBodyAsString(), IterationUpdate.class);
+        final IterationUpdate iteration = safeSerialisation.deserialise(routingContext.getBodyAsString(), IterationUpdate.class);
         iterationRepository.iteration(iteration.iteration);
         routingContext.
                 response().

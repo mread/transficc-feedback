@@ -6,9 +6,9 @@ import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
-import com.transficc.tools.feedback.jenkins.Jenkins;
 import com.transficc.tools.feedback.messaging.JobError;
 import com.transficc.tools.feedback.messaging.MessageBus;
+import com.transficc.tools.jenkins.Jenkins;
 
 public class JobService
 {

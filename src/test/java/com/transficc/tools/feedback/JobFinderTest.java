@@ -11,8 +11,6 @@ import java.util.concurrent.TimeUnit;
 import com.transficc.infrastructure.collections.Result;
 import com.transficc.tools.feedback.messaging.MessageBus;
 import com.transficc.tools.feedback.messaging.PublishableJob;
-import com.transficc.tools.jenkins.ClockService;
-import com.transficc.tools.jenkins.HttpClientFacade;
 import com.transficc.tools.jenkins.Jenkins;
 import com.transficc.tools.jenkins.JobStatus;
 import com.transficc.tools.jenkins.serialized.Job;
@@ -31,9 +29,7 @@ public class JobFinderTest
 {
     private static final String URL = "blah";
     @Mock
-    private HttpClientFacade httpClient;
-    @Mock
-    private ClockService clockService;
+    private Jenkins jenkins;
     @Mock
     private ScheduledExecutorService scheduledExecutorService;
     @Mock
@@ -51,7 +47,7 @@ public class JobFinderTest
         final MessageBus messageBus = new MessageBus(messageBusQueue,
                                                      null);
         jobFinder = new JobFinder(new JobService(jobRepository, messageBus, null, scheduledExecutorService),
-                                  new Jenkins(clockService, httpClient, URL), new JobPrioritiesRepository(Collections.emptyMap()), "");
+                                  jenkins, new JobPrioritiesRepository(Collections.emptyMap()), "");
     }
 
     @SuppressWarnings("unchecked")
@@ -67,7 +63,7 @@ public class JobFinderTest
                 setField("jobs", Collections.singletonList(new MessageBuilder(Job.class).setField("name", "Tom").setField("url", "stuff.com").setField("color", "blue").build())).
                 build();
 
-        BDDMockito.given(httpClient.get(URL + "/api/json?tree=jobs[name,url,color,lastBuild[number,url]]", Jobs.class)).willReturn(Result.success(jobs1), Result.success(jobs2));
+        BDDMockito.given(jenkins.getAllJobs()).willReturn(Result.success(jobs1), Result.success(jobs2));
 
         jobFinder.run();
         jobFinder.run();
@@ -95,7 +91,7 @@ public class JobFinderTest
                 setField("jobs", Collections.singletonList(new MessageBuilder(Job.class).setField("name", "Chinar").setField("url", "stuff.com").setField("color", "red").build())).
                 build();
 
-        BDDMockito.given(httpClient.get(URL + "/api/json?tree=jobs[name,url,color,lastBuild[number,url]]", Jobs.class)).willReturn(Result.success(jobs1), Result.success(jobs2));
+        BDDMockito.given(jenkins.getAllJobs()).willReturn(Result.success(jobs1), Result.success(jobs2));
 
         jobFinder.run();
         jobFinder.run();

@@ -4,7 +4,7 @@ import com.transficc.infrastructure.collections.Result;
 import com.transficc.tools.feedback.messaging.JobError;
 import com.transficc.tools.feedback.messaging.MessageBus;
 import com.transficc.tools.jenkins.Jenkins;
-import com.transficc.tools.jenkins.LatestBuildInformation;
+import com.transficc.tools.jenkins.domain.LatestBuildInformation;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

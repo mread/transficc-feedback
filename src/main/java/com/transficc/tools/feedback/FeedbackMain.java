@@ -15,19 +15,15 @@ import com.fasterxml.jackson.annotation.PropertyAccessor;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.transficc.insfrastructure.threading.ExceptionLoggingThreadFactory;
 import com.transficc.logging.LoggingService;
-import com.transficc.tools.feedback.jenkins.Jenkins;
-import com.transficc.tools.feedback.jenkins.JobFinder;
 import com.transficc.tools.feedback.messaging.MessageBus;
 import com.transficc.tools.feedback.messaging.MessageSubscriber;
 import com.transficc.tools.feedback.messaging.PublishableJob;
 import com.transficc.tools.feedback.routes.Routes;
 import com.transficc.tools.feedback.routes.WebSocketPublisher;
-import com.transficc.tools.jenkins.ClockService;
 import com.transficc.tools.feedback.util.FeedbackProperties;
-import com.transficc.tools.jenkins.SafeSerisalisation;
-import com.transficc.tools.jenkins.HttpClientFacade;
-
-import org.apache.http.impl.client.HttpClients;
+import com.transficc.tools.jenkins.Jenkins;
+import com.transficc.tools.jenkins.JenkinsBuilder;
+import com.transficc.tools.jenkins.SafeSerialisation;
 
 
 import io.vertx.core.Vertx;
@@ -55,9 +51,9 @@ public class FeedbackMain
         final EventBus eventBus = vertx.eventBus();
         final ObjectMapper mapper = Json.mapper;
         mapper.setVisibility(PropertyAccessor.FIELD, JsonAutoDetect.Visibility.ANY);
-        final SafeSerisalisation safeSerisalisation = new SafeSerisalisation(mapper);
-        final WebSocketPublisher webSocketPublisher = new WebSocketPublisher(eventBus, safeSerisalisation);
-        final HttpClientFacade httpClient = new HttpClientFacade(HttpClients.createDefault(), safeSerisalisation);
+        final SafeSerialisation safeSerialisation = new SafeSerialisation(mapper);
+        final WebSocketPublisher webSocketPublisher = new WebSocketPublisher(eventBus, safeSerialisation);
+        final Jenkins jenkins = JenkinsBuilder.newInstance().jenkinsUrl(jenkinsUrl).build();
         final BlockingQueue<PublishableJob> messageQueue = new LinkedBlockingQueue<>();
 
         final ExecutorService statusCheckerService = Executors.newFixedThreadPool(1);
@@ -65,13 +61,12 @@ public class FeedbackMain
         statusCheckerService.submit(new MessageSubscriber(messageQueue, webSocketPublisher));
         final JobRepository jobRepository = new JobRepository();
         final MessageBus messageBus = new MessageBus(messageQueue, webSocketPublisher);
-        final ClockService clockService = new ClockService();
         final JobService jobService = new JobService(jobRepository, messageBus,
-                                                     new Jenkins(clockService, httpClient, jenkinsUrl), scheduledExecutorService);
+                                                     jenkins, scheduledExecutorService);
         final IterationRepository iterationRepository = new IterationRepository(messageBus);
-        Routes.setup(server, jobRepository, iterationRepository, new BreakingNewsService(messageBus), webSocketPublisher, Router.router(vertx), safeSerisalisation);
+        Routes.setup(server, jobRepository, iterationRepository, new BreakingNewsService(messageBus), webSocketPublisher, Router.router(vertx), safeSerialisation);
         final JobFinder jobFinder = new JobFinder(jobService,
-                                                  new Jenkins(clockService, httpClient, jenkinsUrl), new JobPrioritiesRepository(feedbackProperties.getJobsWithPriorities()),
+                                                  jenkins, new JobPrioritiesRepository(feedbackProperties.getJobsWithPriorities()),
                                                   feedbackProperties.getMasterJobName());
 
         scheduledExecutorService.scheduleAtFixedRate(jobFinder, 0, 5, TimeUnit.MINUTES);

@@ -1,7 +1,7 @@
 package com.transficc.tools.feedback.routes;
 
 import com.transficc.tools.feedback.BreakingNewsService;
-import com.transficc.tools.jenkins.SafeSerisalisation;
+import com.transficc.tools.jenkins.SafeSerialisation;
 
 
 import io.vertx.core.Handler;
@@ -10,18 +10,18 @@ import io.vertx.ext.web.RoutingContext;
 public class UpdateStatusRoute implements Handler<RoutingContext>
 {
     private final BreakingNewsService breakingNewsService;
-    private final SafeSerisalisation safeSerisalisation;
+    private final SafeSerialisation safeSerialisation;
 
-    public UpdateStatusRoute(final BreakingNewsService breakingNewsService, final SafeSerisalisation safeSerisalisation)
+    public UpdateStatusRoute(final BreakingNewsService breakingNewsService, final SafeSerialisation safeSerialisation)
     {
         this.breakingNewsService = breakingNewsService;
-        this.safeSerisalisation = safeSerisalisation;
+        this.safeSerialisation = safeSerialisation;
     }
 
     @Override
     public void handle(final RoutingContext routingContext)
     {
-        final StatusUpdate statusUpdate = safeSerisalisation.deserialise(routingContext.getBodyAsString(), StatusUpdate.class);
+        final StatusUpdate statusUpdate = safeSerialisation.deserialise(routingContext.getBodyAsString(), StatusUpdate.class);
         breakingNewsService.status(statusUpdate.message);
         routingContext.
                 response().

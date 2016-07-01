@@ -12,7 +12,7 @@ import com.transficc.tools.jenkins.ClockService;
 import com.transficc.tools.jenkins.Jenkins;
 import com.transficc.tools.jenkins.JobStatus;
 import com.transficc.tools.jenkins.JobsTestResults;
-import com.transficc.tools.jenkins.LatestBuildInformation;
+import com.transficc.tools.jenkins.domain.LatestBuildInformation;
 import com.transficc.tools.jenkins.serialized.JobTestResults;
 
 import org.junit.Before;
