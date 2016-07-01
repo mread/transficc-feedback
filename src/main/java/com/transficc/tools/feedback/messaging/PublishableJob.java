@@ -2,8 +2,8 @@ package com.transficc.tools.feedback.messaging;
 
 import java.util.Arrays;
 
-import com.transficc.tools.jenkins.JobStatus;
-import com.transficc.tools.jenkins.JobsTestResults;
+import com.transficc.tools.jenkins.domain.JobStatus;
+import com.transficc.tools.jenkins.domain.JobsTestResults;
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 
 public class PublishableJob

@@ -2,7 +2,7 @@ package com.transficc.tools.feedback;
 
 import com.transficc.infrastructure.collections.Result;
 import com.transficc.tools.jenkins.Jenkins;
-import com.transficc.tools.jenkins.JobStatus;
+import com.transficc.tools.jenkins.domain.JobStatus;
 import com.transficc.tools.jenkins.serialized.Jobs;
 
 import org.slf4j.Logger;

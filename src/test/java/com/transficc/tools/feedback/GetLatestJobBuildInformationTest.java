@@ -8,10 +8,9 @@ import com.transficc.infrastructure.collections.Result;
 import com.transficc.logging.LoggingService;
 import com.transficc.tools.feedback.messaging.MessageBus;
 import com.transficc.tools.feedback.messaging.PublishableJob;
-import com.transficc.tools.jenkins.ClockService;
 import com.transficc.tools.jenkins.Jenkins;
-import com.transficc.tools.jenkins.JobStatus;
-import com.transficc.tools.jenkins.JobsTestResults;
+import com.transficc.tools.jenkins.domain.JobStatus;
+import com.transficc.tools.jenkins.domain.JobsTestResults;
 import com.transficc.tools.jenkins.domain.LatestBuildInformation;
 import com.transficc.tools.jenkins.serialized.JobTestResults;
 
@@ -32,9 +31,6 @@ public class GetLatestJobBuildInformationTest
         LoggingService.configureLoggingForUnitTests();
     }
 
-
-    @Mock
-    private ClockService clockService;
     @Mock
     private Jenkins jenkins;
     private GetLatestJobBuildInformation jobChecker;
@@ -58,14 +54,12 @@ public class GetLatestJobBuildInformationTest
         final String jobUrl = "tom-url";
         final String revision = "5435dsd";
         final String color = "red";
-        final long timestamp = 2;
         final int buildNumber = 123;
 
         //given
         final JobTestResults testResults = new MessageBuilder(JobTestResults.class).setField("passCount", 1).setField("failCount", 1).setField("skipCount", 2).setField("duration", 1.2).build();
         given(jenkins.getLatestBuildInformation(jobUrl + "/api/json?tree=name,url,color,lastBuild[number,url]")).willReturn(
                 Result.success(new LatestBuildInformation(revision, JobStatus.ERROR, buildNumber, 50.0, new String[0], false, Optional.of(testResults))));
-        given(clockService.currentMillis()).willReturn(timestamp + 2);
 
         //when
 

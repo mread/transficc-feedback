@@ -12,7 +12,7 @@ import com.transficc.infrastructure.collections.Result;
 import com.transficc.tools.feedback.messaging.MessageBus;
 import com.transficc.tools.feedback.messaging.PublishableJob;
 import com.transficc.tools.jenkins.Jenkins;
-import com.transficc.tools.jenkins.JobStatus;
+import com.transficc.tools.jenkins.domain.JobStatus;
 import com.transficc.tools.jenkins.serialized.Job;
 import com.transficc.tools.jenkins.serialized.Jobs;
 

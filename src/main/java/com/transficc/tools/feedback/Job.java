@@ -4,8 +4,8 @@ import java.util.Arrays;
 
 import com.transficc.tools.feedback.messaging.MessageBus;
 import com.transficc.tools.feedback.messaging.PublishableJob;
-import com.transficc.tools.jenkins.JobStatus;
-import com.transficc.tools.jenkins.JobsTestResults;
+import com.transficc.tools.jenkins.domain.JobStatus;
+import com.transficc.tools.jenkins.domain.JobsTestResults;
 
 public class Job
 {
