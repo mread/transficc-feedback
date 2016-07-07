@@ -38,6 +38,7 @@ compileJava.dependsOn {
 
 
 shadowJar {
+    enabled = true
     manifest.attributes('Main-Class': 'com.transficc.tools.feedback.FeedbackMain')
 }
 
