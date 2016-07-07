@@ -46,7 +46,7 @@ shadowJar {
 def libs = rootProject.ext.libs
 
 dependencies {
-    compile project(':transficc-functionality')
+    compile project(':transficc-collections')
     compile project(':threading')
     compile project(':jenkins-library')
     compile project(':logging')
