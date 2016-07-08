@@ -31,29 +31,36 @@ public class GetLatestJobBuildInformation implements Runnable
     @Override
     public void run()
     {
-        final Result<Integer, LatestBuildInformation> latestBuildInformation = jenkins.getLatestBuildInformation(jobUrl);
-        latestBuildInformation.consume(statusCode ->
-                                       {
-                                           if (statusCode == 404)
+        try
+        {
+            final Result<Integer, LatestBuildInformation> latestBuildInformation = jenkins.getLatestBuildInformation(jobUrl);
+            latestBuildInformation.consume(statusCode ->
                                            {
-                                               jobService.onError(JobError.NOT_FOUND, job.getName());
-                                           }
-                                           else
+                                               if (statusCode == 404)
+                                               {
+                                                   jobService.onError(JobError.NOT_FOUND, job.getName());
+                                               }
+                                               else
+                                               {
+                                                   LOGGER.error("Received status code {} whilst trying to get build information for job: {}", statusCode, job.getName());
+                                               }
+                                           },
+                                           buildInformation ->
                                            {
-                                               LOGGER.error("Received status code {} whilst trying to get build information for job: {}", statusCode, job.getName());
-                                           }
-                                       },
-                                       buildInformation ->
-                                       {
-                                           job.maybeUpdateAndPublish(buildInformation.getRevision(),
-                                                                     buildInformation.getJobStatus(),
-                                                                     buildInformation.getNumber(),
-                                                                     buildInformation.getJobCompletionPercentage(),
-                                                                     messageBus,
-                                                                     buildInformation.getComments(),
-                                                                     buildInformation.isBuilding(),
-                                                                     buildInformation.getTestResults());
-                                       });
+                                               job.maybeUpdateAndPublish(buildInformation.getRevision(),
+                                                                         buildInformation.getJobStatus(),
+                                                                         buildInformation.getNumber(),
+                                                                         buildInformation.getJobCompletionPercentage(),
+                                                                         messageBus,
+                                                                         buildInformation.getComments(),
+                                                                         buildInformation.isBuilding(),
+                                                                         buildInformation.getTestResults());
+                                           });
+        }
+        catch (final RuntimeException e)
+        {
+            LOGGER.error("An exception occurred whilst trying to gather build information", e);
+        }
     }
 
 }
