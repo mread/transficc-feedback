@@ -8,7 +8,7 @@ import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
-import com.transficc.infrastructure.collections.Result;
+import com.transficc.functionality.Result;
 import com.transficc.tools.feedback.messaging.MessageBus;
 import com.transficc.tools.feedback.messaging.PublishableJob;
 import com.transficc.tools.jenkins.Jenkins;

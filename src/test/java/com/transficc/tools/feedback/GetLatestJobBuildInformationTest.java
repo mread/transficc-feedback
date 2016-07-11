@@ -4,7 +4,7 @@ import java.util.Optional;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 
-import com.transficc.infrastructure.collections.Result;
+import com.transficc.functionality.Result;
 import com.transficc.logging.LoggingService;
 import com.transficc.tools.feedback.messaging.MessageBus;
 import com.transficc.tools.feedback.messaging.PublishableJob;

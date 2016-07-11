@@ -1,6 +1,6 @@
 package com.transficc.tools.feedback;
 
-import com.transficc.infrastructure.collections.Result;
+import com.transficc.functionality.Result;
 import com.transficc.tools.feedback.messaging.JobError;
 import com.transficc.tools.feedback.messaging.MessageBus;
 import com.transficc.tools.jenkins.Jenkins;
