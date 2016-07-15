@@ -3,8 +3,6 @@ package com.transficc.tools.feedback;
 import com.transficc.functionality.Result;
 import com.transficc.tools.feedback.messaging.JobError;
 import com.transficc.tools.feedback.messaging.MessageBus;
-import com.transficc.tools.jenkins.Jenkins;
-import com.transficc.tools.jenkins.domain.LatestBuildInformation;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -15,14 +13,14 @@ public class GetLatestJobBuildInformation implements Runnable
     private final Job job;
     private final MessageBus messageBus;
     private final String jobUrl;
-    private final Jenkins jenkins;
+    private final JenkinsFacade jenkinsFacade;
     private final JobService jobService;
 
     public GetLatestJobBuildInformation(final MessageBus messageBus,
-                                        final Jenkins jenkins, final JobService jobService, final Job job)
+                                        final JobService jobService, final Job job, final JenkinsFacade jenkinsFacade)
     {
         this.messageBus = messageBus;
-        this.jenkins = jenkins;
+        this.jenkinsFacade = jenkinsFacade;
         this.jobService = jobService;
         this.job = job;
         this.jobUrl = this.job.getUrl() + "/api/json?tree=name,url,color,lastBuild[number,url]";
@@ -33,7 +31,7 @@ public class GetLatestJobBuildInformation implements Runnable
     {
         try
         {
-            final Result<Integer, LatestBuildInformation> latestBuildInformation = jenkins.getLatestBuildInformation(jobUrl);
+            final Result<Integer, JenkinsFacade.LatestBuildInformation> latestBuildInformation = jenkinsFacade.getLatestBuildInformation(jobUrl);
             latestBuildInformation.consume(statusCode ->
                                            {
                                                if (statusCode == 404)

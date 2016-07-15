@@ -45,7 +45,7 @@ public class GetLatestJobBuildInformationTest
         jobName = "Tom is the best";
         final MessageBus messageBus = new MessageBus(messageBusQueue,
                                                      null);
-        this.jobChecker = new GetLatestJobBuildInformation(messageBus, jenkins, null, new Job(jobName, "tom-url", 0, JobStatus.parse("blue"), false));
+        this.jobChecker = new GetLatestJobBuildInformation(messageBus, null, new Job(jobName, "tom-url", 0, JenkinsFacade.JobStatus.SUCCESS, false), new JenkinsFacade(jenkins, null, null));
     }
 
     @Test
@@ -68,7 +68,8 @@ public class GetLatestJobBuildInformationTest
         //then
 
         final PublishableJob actualJob = messageBusQueue.take();
-        assertThat(actualJob, is(new PublishableJob(jobName, jobUrl, 0, revision, JobStatus.parse(color), buildNumber, 50.0, new String[0], false, new JobsTestResults(1, 1, 2, 1.2))));
+        assertThat(actualJob, is(new PublishableJob(jobName, jobUrl, 0, revision, JenkinsFacade.JobStatus.SUCCESS, buildNumber, 50.0, new String[0], false,
+                                                    new JenkinsFacade.TestResults(1, 1, 2, 1.2))));
     }
 
     @Test

@@ -1,7 +1,6 @@
 package com.transficc.tools.feedback;
 
 import com.transficc.tools.feedback.messaging.MessageBus;
-import com.transficc.tools.jenkins.domain.JobStatus;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -12,6 +11,9 @@ import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
+
+
+import static com.transficc.tools.feedback.JenkinsFacade.*;
 
 public class JobTest
 {

@@ -47,7 +47,7 @@ public class JobFinderTest
         final MessageBus messageBus = new MessageBus(messageBusQueue,
                                                      null);
         jobFinder = new JobFinder(new JobService(jobRepository, messageBus, null, scheduledExecutorService),
-                                  jenkins, new JobPrioritiesRepository(Collections.emptyMap()), "");
+                                  new JenkinsFacade(jenkins, new JobPrioritiesRepository(Collections.emptyMap()), ""));
     }
 
     @SuppressWarnings("unchecked")

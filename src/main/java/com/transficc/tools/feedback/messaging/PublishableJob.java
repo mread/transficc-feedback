@@ -2,9 +2,11 @@ package com.transficc.tools.feedback.messaging;
 
 import java.util.Arrays;
 
-import com.transficc.tools.jenkins.domain.JobStatus;
-import com.transficc.tools.jenkins.domain.JobsTestResults;
+import com.transficc.tools.feedback.JenkinsFacade;
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
+
+
+import static com.transficc.tools.feedback.JenkinsFacade.JobStatus;
 
 public class PublishableJob
 {
@@ -18,7 +20,7 @@ public class PublishableJob
     private final String[] comments;
     private final boolean shouldHideProgressBar;
     private final boolean shouldBeFullScreen;
-    private final JobsTestResults jobsTestResults;
+    private final JenkinsFacade.TestResults jobsTestResults;
     private final boolean shouldHideTestResults;
 
     public PublishableJob(final String name,
@@ -30,7 +32,7 @@ public class PublishableJob
                           final double jobCompletionPercentage,
                           final String[] comments,
                           final boolean building,
-                          final JobsTestResults jobsTestResults)
+                          final JenkinsFacade.TestResults jobsTestResults)
     {
         this.name = name;
         this.url = url;
@@ -46,7 +48,7 @@ public class PublishableJob
         this.jobsTestResults = jobsTestResults;
     }
 
-    public JobsTestResults getJobsTestResults()
+    public JenkinsFacade.TestResults getJobsTestResults()
     {
         return jobsTestResults;
     }

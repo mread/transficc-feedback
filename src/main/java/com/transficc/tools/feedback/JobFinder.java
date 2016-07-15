@@ -1,9 +1,8 @@
 package com.transficc.tools.feedback;
 
+import java.util.List;
+
 import com.transficc.functionality.Result;
-import com.transficc.tools.jenkins.Jenkins;
-import com.transficc.tools.jenkins.domain.JobStatus;
-import com.transficc.tools.jenkins.serialized.Jobs;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -12,30 +11,21 @@ public class JobFinder implements Runnable
 {
     private static final Logger LOGGER = LoggerFactory.getLogger(JobFinder.class);
     private final JobService jobService;
-    private final Jenkins jenkins;
-    private final JobPrioritiesRepository jobPrioritiesRepository;
-    private final String masterJobName;
+    private final JenkinsFacade jenkinsFacade;
 
-    public JobFinder(final JobService jobService,
-                     final Jenkins jenkins, final JobPrioritiesRepository jobPrioritiesRepository, final String masterJobName)
+    public JobFinder(final JobService jobService, final JenkinsFacade jenkinsFacade)
     {
         this.jobService = jobService;
-        this.jenkins = jenkins;
-        this.jobPrioritiesRepository = jobPrioritiesRepository;
-        this.masterJobName = masterJobName;
+        this.jenkinsFacade = jenkinsFacade;
     }
 
     @Override
     public void run()
     {
-        final Result<Integer, Jobs> result = jenkins.getAllJobs();
+        final Result<Integer, List<Job>> result = jenkinsFacade.getAllJobs(name -> !jobService.jobExists(name));
         result.consume(statusCode -> LOGGER.error("Received status code {} when trying to obtain jobs", statusCode),
                        jobs ->
-                               jobs.getJobs().
-                                       stream().
-                                       filter(job -> !jobService.jobExists(job.getName())).
-                                       map(job -> new Job(job.getName(), job.getUrl(), jobPrioritiesRepository.getPriorityForJob(job.getName()),
-                                                          JobStatus.parse(job.getColor()), masterJobName.equals(job.getName()))).
-                                       forEach(jobService::add));
+                               jobs.stream()
+                                       .forEach(jobService::add));
     }
 }

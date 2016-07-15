@@ -61,13 +61,12 @@ public class FeedbackMain
         statusCheckerService.submit(new MessageSubscriber(messageQueue, webSocketPublisher));
         final JobRepository jobRepository = new JobRepository();
         final MessageBus messageBus = new MessageBus(messageQueue, webSocketPublisher);
-        final JobService jobService = new JobService(jobRepository, messageBus,
-                                                     jenkins, scheduledExecutorService);
+        final JenkinsFacade jenkinsFacade = new JenkinsFacade(jenkins, new JobPrioritiesRepository(feedbackProperties.getJobsWithPriorities()), feedbackProperties.getMasterJobName());
+        final JobService jobService = new JobService(jobRepository, messageBus, jenkinsFacade, scheduledExecutorService);
         final IterationRepository iterationRepository = new IterationRepository(messageBus);
         Routes.setup(server, jobRepository, iterationRepository, new BreakingNewsService(messageBus), webSocketPublisher, Router.router(vertx), safeSerialisation);
-        final JobFinder jobFinder = new JobFinder(jobService,
-                                                  jenkins, new JobPrioritiesRepository(feedbackProperties.getJobsWithPriorities()),
-                                                  feedbackProperties.getMasterJobName());
+        final JobFinder jobFinder = new JobFinder(jobService, jenkinsFacade
+        );
 
         scheduledExecutorService.scheduleAtFixedRate(jobFinder, 0, 5, TimeUnit.MINUTES);
         server.listen(feedbackProperties.getFeedbackPort());

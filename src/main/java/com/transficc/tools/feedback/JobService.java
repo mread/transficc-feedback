@@ -8,24 +8,22 @@ import java.util.concurrent.TimeUnit;
 
 import com.transficc.tools.feedback.messaging.JobError;
 import com.transficc.tools.feedback.messaging.MessageBus;
-import com.transficc.tools.jenkins.Jenkins;
 
 public class JobService
 {
     private final JobRepository jobRepository;
     private final MessageBus messageBus;
-    private final Jenkins jenkins;
+    private final JenkinsFacade jenkinsFacade;
     private final Map<String, ScheduledFuture> jobNameToScheduledRunnable = new ConcurrentHashMap<>();
     private final ScheduledExecutorService scheduledExecutorService;
 
     public JobService(final JobRepository jobRepository,
                       final MessageBus messageBus,
-                      final Jenkins jenkins,
-                      final ScheduledExecutorService scheduledExecutorService)
+                      final JenkinsFacade jenkinsFacade, final ScheduledExecutorService scheduledExecutorService)
     {
         this.jobRepository = jobRepository;
         this.messageBus = messageBus;
-        this.jenkins = jenkins;
+        this.jenkinsFacade = jenkinsFacade;
         this.scheduledExecutorService = scheduledExecutorService;
     }
 
@@ -48,7 +46,7 @@ public class JobService
 
     public void add(final Job job)
     {
-        final GetLatestJobBuildInformation statusChecker = new GetLatestJobBuildInformation(messageBus, jenkins, this, job);
+        final GetLatestJobBuildInformation statusChecker = new GetLatestJobBuildInformation(messageBus, this, job, jenkinsFacade);
         final String jobName = job.getName();
         jobRepository.put(jobName, job);
         jobNameToScheduledRunnable.put(jobName, scheduledExecutorService.scheduleAtFixedRate(statusChecker, 0, 5, TimeUnit.SECONDS));

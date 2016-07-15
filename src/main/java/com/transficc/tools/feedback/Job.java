@@ -4,8 +4,10 @@ import java.util.Arrays;
 
 import com.transficc.tools.feedback.messaging.MessageBus;
 import com.transficc.tools.feedback.messaging.PublishableJob;
-import com.transficc.tools.jenkins.domain.JobStatus;
-import com.transficc.tools.jenkins.domain.JobsTestResults;
+
+
+import static com.transficc.tools.feedback.JenkinsFacade.JobStatus;
+import static com.transficc.tools.feedback.JenkinsFacade.TestResults;
 
 public class Job
 {
@@ -21,7 +23,7 @@ public class Job
     private volatile double jobCompletionPercentage;
     private volatile String[] comments = new String[0];
     private volatile boolean building;
-    private volatile JobsTestResults jobsTestResults;
+    private volatile TestResults jobsTestResults;
 
     public Job(final String name, final String url, final int priority, final JobStatus jobStatus, final boolean shouldDisplayCommentsForJob)
     {
@@ -39,7 +41,7 @@ public class Job
                                       final MessageBus messageBus,
                                       final String[] comments,
                                       final boolean building,
-                                      final JobsTestResults jobsTestResults)
+                                      final TestResults jobsTestResults)
     {
         if (isThereAnUpdate(revision, jobStatus, buildNumber, jobCompletionPercentage, building))
         {
