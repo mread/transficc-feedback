@@ -59,7 +59,7 @@ public class JenkinsFacade
             }
             final BuildWithDetails buildDetails = job.getLastBuild().details();
             final String revision = getRevision(buildDetails);
-            final JobStatus jobStatus = JobStatus.parse(buildDetails.getResult(), previousJobStatus);
+            final JobStatus jobStatus = !job.isBuildable() ? JobStatus.DISABLED : JobStatus.parse(buildDetails.getResult(), previousJobStatus);
             final double jobCompletionPercentage = (double)(clockService.currentTimeMillis() - buildDetails.getTimestamp()) / buildDetails.getEstimatedDuration() * 100;
             final List<String> commentList = buildDetails
                     .getChangeSet()
@@ -244,21 +244,33 @@ public class JenkinsFacade
 
         private static JobStatus parse(final BuildResult result, final JobStatus previousStatus)
         {
+            if (result == null)
+            {
+                return previousStatus;
+            }
+
+            final JobStatus output;
+
             switch (result)
             {
-                case BUILDING:
-                case REBUILDING:
-                    return previousStatus;
                 case ABORTED:
                 case FAILURE:
                 case UNSTABLE:
-                    return ERROR;
+                    output = ERROR;
+                    break;
                 case SUCCESS:
-                    return SUCCESS;
+                    output = SUCCESS;
+                    break;
                 case NOT_BUILT:
-                    return DISABLED;
+                    output = DISABLED;
+                    break;
+                case BUILDING:
+                case REBUILDING:
+                default:
+                    output = previousStatus;
+                    break;
             }
-            return previousStatus;
+            return output;
         }
     }
 }

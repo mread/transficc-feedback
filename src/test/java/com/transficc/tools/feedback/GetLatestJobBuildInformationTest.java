@@ -51,6 +51,7 @@ public class GetLatestJobBuildInformationTest
         MockitoAnnotations.initMocks(this);
         messageBusQueue = new LinkedBlockingQueue<>();
         jobName = "Tom is the best";
+        given(jobWithDetails.isBuildable()).willReturn(true);
         final MessageBus messageBus = new MessageBus(messageBusQueue, null);
         this.jobChecker = new GetLatestJobBuildInformation(messageBus, null, new Job(jobName, "tom-url", 0, JenkinsFacade.JobStatus.SUCCESS, false), new JenkinsFacade(jenkins, null, null,
                                                                                                                                                                        () -> 10));
