@@ -49,23 +49,22 @@ dependencies {
     compile project(':transficc-functionality')
     compile project(':threading')
     compile project(':logging')
-    runtime libs.'antlr4-runtime'
     compile libs.'commons-codec'
     compile libs.'commons-logging'
     compile libs.'findbugs-annotations'
     compile libs.'handlebars'
-    runtime libs.'httpclient'
-    runtime libs.'httpcore'
     compile libs.'jackson'
     compile libs.'jenkins'
     compile libs.'jcip-annotations'
     compile libs.'logging'
     compile libs.'netty'
     compile libs.'vertx'
+    runtime libs.'antlr4-runtime'
     runtime libs.'commons-lang3'
+    runtime libs.'httpclient'
+    runtime libs.'httpcore'
     runtime libs.'guava'
     runtime libs.'dom4j'
-
     testCompile project(':logging')
     testCompile libs.'tf-test'
 }
