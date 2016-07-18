@@ -2,6 +2,7 @@ package com.transficc.tools.feedback;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.URI;
 import java.util.Properties;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.ExecutorService;
@@ -13,6 +14,7 @@ import java.util.concurrent.TimeUnit;
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.PropertyAccessor;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.offbytwo.jenkins.JenkinsServer;
 import com.transficc.insfrastructure.threading.ExceptionLoggingThreadFactory;
 import com.transficc.logging.LoggingService;
 import com.transficc.tools.feedback.messaging.MessageBus;
@@ -21,9 +23,7 @@ import com.transficc.tools.feedback.messaging.PublishableJob;
 import com.transficc.tools.feedback.routes.Routes;
 import com.transficc.tools.feedback.routes.WebSocketPublisher;
 import com.transficc.tools.feedback.util.FeedbackProperties;
-import com.transficc.tools.jenkins.Jenkins;
-import com.transficc.tools.jenkins.JenkinsBuilder;
-import com.transficc.tools.jenkins.SafeSerialisation;
+import com.transficc.tools.feedback.util.SafeSerialisation;
 
 
 import io.vertx.core.Vertx;
@@ -53,7 +53,7 @@ public class FeedbackMain
         mapper.setVisibility(PropertyAccessor.FIELD, JsonAutoDetect.Visibility.ANY);
         final SafeSerialisation safeSerialisation = new SafeSerialisation(mapper);
         final WebSocketPublisher webSocketPublisher = new WebSocketPublisher(eventBus, safeSerialisation);
-        final Jenkins jenkins = JenkinsBuilder.newInstance().jenkinsUrl(jenkinsUrl).build();
+        final JenkinsServer jenkins = new JenkinsServer(URI.create(jenkinsUrl));
         final BlockingQueue<PublishableJob> messageQueue = new LinkedBlockingQueue<>();
 
         final ExecutorService statusCheckerService = Executors.newFixedThreadPool(1);
@@ -61,7 +61,8 @@ public class FeedbackMain
         statusCheckerService.submit(new MessageSubscriber(messageQueue, webSocketPublisher));
         final JobRepository jobRepository = new JobRepository();
         final MessageBus messageBus = new MessageBus(messageQueue, webSocketPublisher);
-        final JenkinsFacade jenkinsFacade = new JenkinsFacade(jenkins, new JobPrioritiesRepository(feedbackProperties.getJobsWithPriorities()), feedbackProperties.getMasterJobName());
+        final JenkinsFacade jenkinsFacade = new JenkinsFacade(jenkins, new JobPrioritiesRepository(feedbackProperties.getJobsWithPriorities()), feedbackProperties.getMasterJobName(),
+                                                              System::currentTimeMillis);
         final JobService jobService = new JobService(jobRepository, messageBus, jenkinsFacade, scheduledExecutorService);
         final IterationRepository iterationRepository = new IterationRepository(messageBus);
         Routes.setup(server, jobRepository, iterationRepository, new BreakingNewsService(messageBus), webSocketPublisher, Router.router(vertx), safeSerialisation);

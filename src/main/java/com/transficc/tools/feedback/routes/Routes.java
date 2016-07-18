@@ -1,9 +1,9 @@
 package com.transficc.tools.feedback.routes;
 
+import com.transficc.tools.feedback.BreakingNewsService;
 import com.transficc.tools.feedback.IterationRepository;
 import com.transficc.tools.feedback.JobRepository;
-import com.transficc.tools.feedback.BreakingNewsService;
-import com.transficc.tools.jenkins.SafeSerialisation;
+import com.transficc.tools.feedback.util.SafeSerialisation;
 
 
 import io.vertx.core.http.HttpServer;

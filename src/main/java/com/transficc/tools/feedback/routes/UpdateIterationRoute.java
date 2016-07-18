@@ -1,7 +1,7 @@
 package com.transficc.tools.feedback.routes;
 
 import com.transficc.tools.feedback.IterationRepository;
-import com.transficc.tools.jenkins.SafeSerialisation;
+import com.transficc.tools.feedback.util.SafeSerialisation;
 
 
 import io.vertx.core.Handler;

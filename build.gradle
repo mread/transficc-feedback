@@ -48,7 +48,6 @@ def libs = rootProject.ext.libs
 dependencies {
     compile project(':transficc-functionality')
     compile project(':threading')
-    compile project(':jenkins-library')
     compile project(':logging')
     runtime libs.'antlr4-runtime'
     compile libs.'commons-codec'
@@ -58,11 +57,14 @@ dependencies {
     runtime libs.'httpclient'
     runtime libs.'httpcore'
     compile libs.'jackson'
+    compile libs.'jenkins'
     compile libs.'jcip-annotations'
     compile libs.'logging'
     compile libs.'netty'
     compile libs.'vertx'
     runtime libs.'commons-lang3'
+    runtime libs.'guava'
+    runtime libs.'dom4j'
 
     testCompile project(':logging')
     testCompile libs.'tf-test'

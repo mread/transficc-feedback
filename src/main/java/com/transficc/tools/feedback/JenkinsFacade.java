@@ -1,61 +1,111 @@
 package com.transficc.tools.feedback;
 
+import java.io.IOException;
 import java.util.List;
+import java.util.Map;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
+import com.offbytwo.jenkins.JenkinsServer;
+import com.offbytwo.jenkins.model.BuildChangeSetItem;
+import com.offbytwo.jenkins.model.BuildResult;
+import com.offbytwo.jenkins.model.BuildWithDetails;
+import com.offbytwo.jenkins.model.JobWithDetails;
 import com.transficc.functionality.Result;
-import com.transficc.tools.jenkins.Jenkins;
-import com.transficc.tools.jenkins.domain.JobsTestResults;
-import com.transficc.tools.jenkins.serialized.Jobs;
+import com.transficc.tools.feedback.util.ClockService;
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 
 public class JenkinsFacade
 {
-    private final Jenkins jenkins;
+    private final JenkinsServer jenkins;
     private final JobPrioritiesRepository jobPrioritiesRepository;
     private final String masterJobName;
+    private final ClockService clockService;
 
-    public JenkinsFacade(final Jenkins jenkins, final JobPrioritiesRepository jobPrioritiesRepository, final String masterJobName)
+    public JenkinsFacade(final JenkinsServer jenkins, final JobPrioritiesRepository jobPrioritiesRepository, final String masterJobName, final ClockService clockService)
     {
         this.jenkins = jenkins;
         this.jobPrioritiesRepository = jobPrioritiesRepository;
         this.masterJobName = masterJobName;
+        this.clockService = clockService;
     }
 
     public Result<Integer, List<Job>> getAllJobs(final Predicate<String> filter)
     {
-        final Result<Integer, Jobs> result = jenkins.getAllJobs();
-        return result.fold(Result::error,
-                           jobs ->
-                                   Result.success(jobs.getJobs().
-                                           stream().
-                                           filter(job -> filter.test(job.getName())).
-                                           map(job -> new Job(job.getName(), job.getUrl(), jobPrioritiesRepository.getPriorityForJob(job.getName()),
-                                                              JobStatus.DISABLED, masterJobName.equals(job.getName()))).
-                                           collect(Collectors.toList())));
-
+        try
+        {
+            final Map<String, com.offbytwo.jenkins.model.Job> jobs = jenkins.getJobs();
+            return Result.success(jobs.values()
+                                          .stream()
+                                          .filter(job -> filter.test(job.getName()))
+                                          .map(job -> new Job(job.getName(), job.getUrl(), jobPrioritiesRepository.getPriorityForJob(job.getName()), JobStatus.DISABLED,
+                                                              masterJobName.equals(job.getName())))
+                                          .collect(Collectors.toList()));
+        }
+        catch (final IOException e)
+        {
+            return Result.error(500);
+        }
     }
 
-    public Result<Integer, LatestBuildInformation> getLatestBuildInformation(final String jobUrl)
+    public Result<Integer, LatestBuildInformation> getLatestBuildInformation(final String jobName, final JobStatus previousJobStatus)
     {
-        final Result<Integer, com.transficc.tools.jenkins.domain.LatestBuildInformation> latestBuildInformation = jenkins.getLatestBuildInformation(jobUrl);
-        return latestBuildInformation.fold(Result::error,
-                                           buildInformation ->
-                                           {
-                                               final JobsTestResults testResults = buildInformation.getTestResults();
-                                               return Result.success(new LatestBuildInformation(buildInformation.getRevision(),
-                                                                                                JobStatus.parse(buildInformation.getJobStatus()),
-                                                                                                buildInformation.getNumber(),
-                                                                                                buildInformation.getJobCompletionPercentage(),
-                                                                                                buildInformation.getComments(),
-                                                                                                buildInformation.isBuilding(),
-                                                                                                new TestResults(testResults.getPassCount(),
-                                                                                                                testResults.getFailCount(),
-                                                                                                                testResults.getSkipCount(),
-                                                                                                                testResults.getDuration())));
-                                           }
-        );
+        try
+        {
+            final JobWithDetails job = jenkins.getJob(jobName);
+            if (job == null)
+            {
+                return Result.error(400);
+            }
+            final BuildWithDetails buildDetails = job.getLastBuild().details();
+            final String revision = getRevision(buildDetails);
+            final JobStatus jobStatus = JobStatus.parse(buildDetails.getResult(), previousJobStatus);
+            final double jobCompletionPercentage = (double)(clockService.currentTimeMillis() - buildDetails.getTimestamp()) / buildDetails.getEstimatedDuration() * 100;
+            final List<String> commentList = buildDetails
+                    .getChangeSet()
+                    .getItems()
+                    .stream()
+                    .map(BuildChangeSetItem::getComment)
+                    .collect(Collectors.toList());
+            final String[] comments = new String[commentList.size()];
+            commentList.toArray(comments);
+            final TestResults testResults = getTestResults(buildDetails);
+            return Result.success(new LatestBuildInformation(revision, jobStatus, buildDetails.getNumber(), jobCompletionPercentage, comments, buildDetails.isBuilding(), testResults));
+        }
+        catch (final IOException e)
+        {
+            return Result.error(500);
+        }
+    }
+
+    private static String getRevision(final BuildWithDetails buildDetails)
+    {
+        for (final Object entries : buildDetails.getActions())
+        {
+            final Map<String, String> lastBuildRevision = ((Map<String, Map<String, String>>)entries).get("lastBuiltRevision");
+            if (lastBuildRevision != null)
+            {
+                return lastBuildRevision.get("SHA1");
+            }
+        }
+        return "";
+    }
+
+    private static TestResults getTestResults(final BuildWithDetails buildDetails)
+    {
+        for (final Object entries : buildDetails.getActions())
+        {
+            final Map<String, String> maps = (Map<String, String>)entries;
+            if (maps.containsKey("testReport"))
+            {
+                final int failCount = Integer.parseInt(maps.get("failCount"));
+                final int skipCount = Integer.parseInt(maps.get("skipCount"));
+                final int totalCount = Integer.parseInt(maps.get("totalCount"));
+                final int passCount = totalCount - failCount - skipCount;
+                return new TestResults(passCount, failCount, skipCount);
+            }
+        }
+        return null;
     }
 
     @SuppressFBWarnings({"EI_EXPOSE_REP", "EI_EXPOSE_REP2"})
@@ -125,14 +175,12 @@ public class JenkinsFacade
         private final int passCount;
         private final int failCount;
         private final int skipCount;
-        private final double duration;
 
-        public TestResults(final int passCount, final int failCount, final int skipCount, final double duration)
+        public TestResults(final int passCount, final int failCount, final int skipCount)
         {
             this.passCount = passCount;
             this.failCount = failCount;
             this.skipCount = skipCount;
-            this.duration = duration;
         }
 
         public int getPassCount()
@@ -151,9 +199,39 @@ public class JenkinsFacade
             return skipCount;
         }
 
-        public double getDuration()
+        @Override
+        public boolean equals(final Object o)
         {
-            return duration;
+            if (this == o)
+            {
+                return true;
+            }
+            if (o == null || getClass() != o.getClass())
+            {
+                return false;
+            }
+
+            final TestResults that = (TestResults)o;
+
+            if (passCount != that.passCount)
+            {
+                return false;
+            }
+            if (failCount != that.failCount)
+            {
+                return false;
+            }
+            return skipCount == that.skipCount;
+
+        }
+
+        @Override
+        public int hashCode()
+        {
+            int result = passCount;
+            result = 31 * result + failCount;
+            result = 31 * result + skipCount;
+            return result;
         }
     }
 
@@ -164,19 +242,23 @@ public class JenkinsFacade
         DISABLED,
         SUCCESS;
 
-        public static JobStatus parse(final com.transficc.tools.jenkins.domain.JobStatus jobStatus)
+        private static JobStatus parse(final BuildResult result, final JobStatus previousStatus)
         {
-            switch (jobStatus)
+            switch (result)
             {
+                case BUILDING:
+                case REBUILDING:
+                    return previousStatus;
+                case ABORTED:
+                case FAILURE:
+                case UNSTABLE:
+                    return ERROR;
                 case SUCCESS:
                     return SUCCESS;
-                case DISABLED:
+                case NOT_BUILT:
                     return DISABLED;
-                case ERROR:
-                    return ERROR;
-                default:
-                    throw new IllegalArgumentException("Unknown job status " + jobStatus);
             }
+            return previousStatus;
         }
     }
 }

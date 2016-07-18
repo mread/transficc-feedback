@@ -31,7 +31,7 @@ public class GetLatestJobBuildInformation implements Runnable
     {
         try
         {
-            final Result<Integer, JenkinsFacade.LatestBuildInformation> latestBuildInformation = jenkinsFacade.getLatestBuildInformation(jobUrl);
+            final Result<Integer, JenkinsFacade.LatestBuildInformation> latestBuildInformation = jenkinsFacade.getLatestBuildInformation(job.getName(), job.getJobStatus());
             latestBuildInformation.consume(statusCode ->
                                            {
                                                if (statusCode == 404)

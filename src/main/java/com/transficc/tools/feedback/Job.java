@@ -19,7 +19,7 @@ public class Job
     private volatile String revision = "";
     private volatile JobStatus jobStatus;
     private final boolean shouldDisplayCommentsForJob;
-    private volatile int buildNumber = 1;
+    private volatile int buildNumber = 0;
     private volatile double jobCompletionPercentage;
     private volatile String[] comments = new String[0];
     private volatile boolean building;
@@ -64,6 +64,11 @@ public class Job
     public String getUrl()
     {
         return url;
+    }
+
+    public JobStatus getJobStatus()
+    {
+        return jobStatus;
     }
 
     public PublishableJob createPublishable()
