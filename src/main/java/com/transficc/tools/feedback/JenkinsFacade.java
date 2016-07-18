@@ -95,12 +95,12 @@ public class JenkinsFacade
     {
         for (final Object entries : buildDetails.getActions())
         {
-            final Map<String, String> maps = (Map<String, String>)entries;
-            if (maps.containsKey("testReport"))
+            final Map<String, Object> maps = (Map<String, Object>)entries;
+            if ("testReport".equals(maps.get("urlName")))
             {
-                final int failCount = Integer.parseInt(maps.get("failCount"));
-                final int skipCount = Integer.parseInt(maps.get("skipCount"));
-                final int totalCount = Integer.parseInt(maps.get("totalCount"));
+                final int failCount = (int)maps.get("failCount");
+                final int skipCount = (int)maps.get("skipCount");
+                final int totalCount = (int)maps.get("totalCount");
                 final int passCount = totalCount - failCount - skipCount;
                 return new TestResults(passCount, failCount, skipCount);
             }

@@ -67,10 +67,10 @@ public class GetLatestJobBuildInformationTest
         revisions.put("SHA1", revision);
         revisionActions.put("lastBuiltRevision", revisions);
         final Map<Object, Object> testResults = new HashMap<>();
-        testResults.put("failCount", "1");
-        testResults.put("skipCount", "2");
-        testResults.put("totalCount", "4");
-        testResults.put("testReport", "");
+        testResults.put("failCount", 1);
+        testResults.put("skipCount", 2);
+        testResults.put("totalCount", 4);
+        testResults.put("urlName", "testReport");
         final List<Map<Object, Object>> actions = Arrays.asList(revisionActions, testResults);
         final BuildChangeSet buildChangeSet = new BuildChangeSet();
         buildChangeSet.setItems(Collections.emptyList());
