@@ -54,7 +54,7 @@ dependencies {
     compile libs.'findbugs-annotations'
     compile libs.'handlebars'
     compile libs.'jackson'
-    compile libs.'jenkins'
+    compile libs.'jenkins-client'
     compile libs.'jcip-annotations'
     compile libs.'logging'
     compile libs.'netty'
