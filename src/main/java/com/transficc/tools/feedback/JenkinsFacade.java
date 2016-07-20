@@ -7,6 +7,7 @@ import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 import com.offbytwo.jenkins.JenkinsServer;
+import com.offbytwo.jenkins.model.Build;
 import com.offbytwo.jenkins.model.BuildChangeSetItem;
 import com.offbytwo.jenkins.model.BuildResult;
 import com.offbytwo.jenkins.model.BuildWithDetails;
@@ -53,7 +54,7 @@ public class JenkinsFacade
         try
         {
             final JobWithDetails job = jenkins.getJob(jobName);
-            if (job == null)
+            if (job == null || job.getLastBuild().equals(Build.BUILD_HAS_NEVER_RAN))
             {
                 return Result.error(400);
             }
