@@ -3,7 +3,6 @@ package com.transficc.tools.feedback.messaging;
 import java.util.Arrays;
 
 import com.transficc.tools.feedback.JenkinsFacade;
-import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 
 
 import static com.transficc.tools.feedback.JenkinsFacade.JobStatus;
@@ -103,7 +102,6 @@ public class PublishableJob
         return shouldHideTestResults;
     }
 
-    @SuppressFBWarnings(value = "EI_EXPOSE_REP", justification = "This is only read via mustache")
     public String[] getComments()
     {
         return comments;

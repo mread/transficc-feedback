@@ -14,7 +14,6 @@ import com.offbytwo.jenkins.model.BuildWithDetails;
 import com.offbytwo.jenkins.model.JobWithDetails;
 import com.transficc.functionality.Result;
 import com.transficc.tools.feedback.util.ClockService;
-import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 
 public class JenkinsFacade
 {
@@ -109,7 +108,6 @@ public class JenkinsFacade
         return null;
     }
 
-    @SuppressFBWarnings({"EI_EXPOSE_REP", "EI_EXPOSE_REP2"})
     public static final class LatestBuildInformation
     {
         private final String revision;
