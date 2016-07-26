@@ -9,13 +9,13 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.TimeUnit;
 
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.PropertyAccessor;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.offbytwo.jenkins.JenkinsServer;
-import com.transficc.insfrastructure.threading.ExceptionLoggingThreadFactory;
 import com.transficc.logging.LoggingService;
 import com.transficc.tools.feedback.messaging.MessageBus;
 import com.transficc.tools.feedback.messaging.MessageSubscriber;
@@ -24,6 +24,7 @@ import com.transficc.tools.feedback.routes.Routes;
 import com.transficc.tools.feedback.routes.WebSocketPublisher;
 import com.transficc.tools.feedback.util.FeedbackProperties;
 import com.transficc.tools.feedback.util.SafeSerialisation;
+import com.transficc.tools.feedback.util.LoggingThreadFactory;
 
 
 import io.vertx.core.Vertx;
@@ -56,8 +57,9 @@ public class FeedbackMain
         final JenkinsServer jenkins = new JenkinsServer(URI.create(jenkinsUrl));
         final BlockingQueue<PublishableJob> messageQueue = new LinkedBlockingQueue<>();
 
-        final ExecutorService statusCheckerService = Executors.newFixedThreadPool(1);
-        final ScheduledExecutorService scheduledExecutorService = Executors.newScheduledThreadPool(4, new ExceptionLoggingThreadFactory("tools-feedback"));
+        final ThreadFactory threadFactory = new LoggingThreadFactory("tools-feedback");
+        final ExecutorService statusCheckerService = Executors.newFixedThreadPool(1, threadFactory);
+        final ScheduledExecutorService scheduledExecutorService = Executors.newScheduledThreadPool(4, threadFactory);
         statusCheckerService.submit(new MessageSubscriber(messageQueue, webSocketPublisher));
         final JobRepository jobRepository = new JobRepository();
         final MessageBus messageBus = new MessageBus(messageQueue, webSocketPublisher);

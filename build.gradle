@@ -47,7 +47,6 @@ def libs = rootProject.ext.libs
 
 dependencies {
     compile project(':transficc-functionality')
-    compile project(':threading')
     compile project(':logging')
     compile libs.'commons-codec'
     compile libs.'commons-logging'
