@@ -14,7 +14,6 @@ import com.offbytwo.jenkins.model.BuildChangeSet;
 import com.offbytwo.jenkins.model.BuildResult;
 import com.offbytwo.jenkins.model.BuildWithDetails;
 import com.offbytwo.jenkins.model.JobWithDetails;
-import com.transficc.logging.LoggingService;
 import com.transficc.tools.feedback.messaging.MessageBus;
 import com.transficc.tools.feedback.messaging.PublishableJob;
 
@@ -29,11 +28,6 @@ import static org.mockito.BDDMockito.given;
 
 public class GetLatestJobBuildInformationTest
 {
-
-    static
-    {
-        LoggingService.configureLoggingForUnitTests();
-    }
 
     @Mock
     private JenkinsServer jenkins;

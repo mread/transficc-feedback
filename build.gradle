@@ -47,7 +47,6 @@ def libs = rootProject.ext.libs
 
 dependencies {
     compile project(':transficc-functionality')
-    compile project(':logging')
     compile libs.'commons-codec'
     compile libs.'commons-logging'
     compile libs.'findbugs-annotations'
@@ -64,6 +63,5 @@ dependencies {
     runtime libs.'httpcore'
     runtime libs.'guava'
     runtime libs.'dom4j'
-    testCompile project(':logging')
     testCompile libs.'tf-test'
 }
