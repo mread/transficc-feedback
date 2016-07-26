@@ -43,7 +43,36 @@ shadowJar {
 }
 
 
-def libs = rootProject.ext.libs
+def defineLocalLibs()
+{
+    String vertxVersion = '3.3.0'
+    String nettyVersion = '4.1.1.Final'
+
+    Map libs = [
+            'vertx'               : ["io.vertx:vertx-web:$vertxVersion", "io.vertx:vertx-auth-common:$vertxVersion", "io.vertx:vertx-core:$vertxVersion", "io.vertx:vertx-web-templ-handlebars:$vertxVersion"],
+            'jackson'             : ['com.fasterxml.jackson.core:jackson-core:2.7.4', 'com.fasterxml.jackson.core:jackson-databind:2.7.4', 'com.fasterxml.jackson.core:jackson-annotations:2.7.4'],
+            'logging'             : ['org.slf4j:slf4j-api:1.7.16', 'org.apache.logging.log4j:log4j-api:2.5', 'org.apache.logging.log4j:log4j-core:2.5', 'org.apache.logging.log4j:log4j-slf4j-impl:2.5'],
+            'commons-codec'       : 'commons-codec:commons-codec:1.9',
+            'commons-logging'     : 'commons-logging:commons-logging:1.2',
+            'findbugs-annotations': 'com.google.code.findbugs:annotations:3.0.1',
+            'handlebars'          : 'com.github.jknack:handlebars:4.0.3',
+            'jenkins-client'      : 'com.offbytwo.jenkins:jenkins-client:0.3.5',
+            'jcip-annotations'    : 'net.jcip:jcip-annotations:1.0',
+            'netty'               : ["io.netty:netty-common:$nettyVersion", "io.netty:netty-resolver:$nettyVersion", "io.netty:netty-resolver-dns:$nettyVersion", "io.netty:netty-buffer:$nettyVersion",
+                                     "io.netty:netty-transport:$nettyVersion", "io.netty:netty-handler:$nettyVersion", "io.netty:netty-codec:$nettyVersion", "io.netty:netty-codec-http:$nettyVersion",
+                                     "io.netty:netty-codec-http:$nettyVersion", "io.netty:netty-codec-http2:$nettyVersion", "io.netty:netty-codec-dns:$nettyVersion"],
+            'antlr4-runtime'      : 'org.antlr:antlr4-runtime:4.5.1-1',
+            'commons-lang3'       : 'org.apache.commons:commons-lang3:3.1',
+            'httpclient'          : 'org.apache.httpcomponents:httpclient:4.5.1',
+            'httpcore'            : 'org.apache.httpcomponents:httpcore:4.4.3',
+            'guava'               : 'com.google.guava:guava:19.0',
+            'dom4j'               : 'org.dom4j:dom4j:2.0.0'
+    ]
+
+    return libs
+}
+
+def libs = rootProject.ext.has('libs') ? rootProject.ext.libs : defineLocalLibs()
 
 dependencies {
     compile project(':transficc-functionality')
