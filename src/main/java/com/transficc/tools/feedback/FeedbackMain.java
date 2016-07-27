@@ -1,9 +1,11 @@
 package com.transficc.tools.feedback;
 
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URI;
+import java.util.Optional;
 import java.util.Properties;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.ExecutorService;
@@ -17,6 +19,7 @@ import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.PropertyAccessor;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.offbytwo.jenkins.JenkinsServer;
+import com.transficc.functionality.Optionality;
 import com.transficc.tools.feedback.messaging.MessageBus;
 import com.transficc.tools.feedback.messaging.MessageSubscriber;
 import com.transficc.tools.feedback.messaging.PublishableJob;
@@ -36,6 +39,8 @@ import org.apache.logging.log4j.core.config.builder.api.ConfigurationBuilderFact
 import org.apache.logging.log4j.core.config.builder.api.FilterComponentBuilder;
 import org.apache.logging.log4j.core.config.builder.api.LayoutComponentBuilder;
 import org.apache.logging.log4j.core.config.builder.impl.BuiltConfiguration;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 
 import io.vertx.core.Vertx;
@@ -52,9 +57,12 @@ public class FeedbackMain
         configureLogging("transficc-feedback");
     }
 
+    private static final Logger LOGGER = LoggerFactory.getLogger(FeedbackMain.class);
+
     public static void main(final String[] args) throws IOException
     {
-        final Properties properties = createProperties();
+        final Optional<File> propertiesFile = args.length == 1 ? Optional.of(new File(args[0])) : Optional.empty();
+        final Properties properties = createProperties(propertiesFile);
         final FeedbackProperties feedbackProperties = new FeedbackProperties(properties);
         System.setProperty("vertx.cacheDirBase", feedbackProperties.getVertxCacheDir());
         final String jenkinsUrl = feedbackProperties.getJenkinsUrl();
@@ -86,13 +94,36 @@ public class FeedbackMain
         server.listen(feedbackProperties.getFeedbackPort());
     }
 
-    private static Properties createProperties() throws IOException
+    private static Properties createProperties(final Optional<File> propertiesFile) throws IOException
     {
-        final ClassLoader classLoader = FeedbackMain.class.getClassLoader();
-        final InputStream serviceProperties = classLoader.getResourceAsStream("feedback.properties");
         final Properties properties = new Properties();
-        properties.load(serviceProperties);
+        Optionality.consume(propertiesFile, () ->
+                            {
+                                final ClassLoader classLoader = FeedbackMain.class.getClassLoader();
+                                final InputStream serviceProperties = classLoader.getResourceAsStream("feedback.properties");
+                                try
+                                {
+                                    properties.load(serviceProperties);
+                                }
+                                catch (final IOException e)
+                                {
+                                    LOGGER.error("Failed to load properties", e);
+                                }
+                            },
+                            (File file) ->
+                            {
+                                try (final FileInputStream inStream = new FileInputStream(file))
+                                {
+                                    properties.load(inStream);
+                                }
+                                catch (final IOException e)
+                                {
+                                    LOGGER.error("Failed to load properties", e);
+                                }
+
+                            });
         return properties;
+
     }
 
     private static void configureLogging(final String serviceName)
