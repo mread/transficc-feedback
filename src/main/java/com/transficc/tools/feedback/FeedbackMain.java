@@ -52,9 +52,11 @@ import io.vertx.ext.web.Router;
 public class FeedbackMain
 {
 
+    private static final String SERVICE_NAME = "transficc-feedback";
+
     static
     {
-        configureLogging("transficc-feedback");
+        configureLogging(SERVICE_NAME);
     }
 
     private static final Logger LOGGER = LoggerFactory.getLogger(FeedbackMain.class);
@@ -76,7 +78,7 @@ public class FeedbackMain
         final JenkinsServer jenkins = new JenkinsServer(URI.create(jenkinsUrl));
         final BlockingQueue<PublishableJob> messageQueue = new LinkedBlockingQueue<>();
 
-        final ThreadFactory threadFactory = new LoggingThreadFactory("tools-feedback");
+        final ThreadFactory threadFactory = new LoggingThreadFactory(SERVICE_NAME);
         final ExecutorService statusCheckerService = Executors.newFixedThreadPool(1, threadFactory);
         final ScheduledExecutorService scheduledExecutorService = Executors.newScheduledThreadPool(4, threadFactory);
         statusCheckerService.submit(new MessageSubscriber(messageQueue, webSocketPublisher));

@@ -15,7 +15,7 @@ public class FeedbackProperties
 
     public String getVertxCacheDir()
     {
-        return properties.getProperty("feedback.vertx.cachedir");
+        return "cache";
     }
 
     public Map<String, Integer> getJobsWithPriorities()
