@@ -49,7 +49,7 @@ public class FeedbackMain
 
     static
     {
-        configureLogging("tools-feedback");
+        configureLogging("transficc-feedback");
     }
 
     public static void main(final String[] args) throws IOException
