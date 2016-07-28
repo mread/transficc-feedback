@@ -45,6 +45,7 @@ http://localhost:4567
 - Persist test results (potentially just acceptance) for graphing / analysis
 - Ability to block commits to repository if the master commit build is broken
 - Interact with a Jenkins server that has authentication enabled
+- Fix the never ending green (boxes keep growing in height)
 
 License
 ----
