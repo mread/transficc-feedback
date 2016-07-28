@@ -52,6 +52,16 @@ public class FeedbackProperties
         return properties.getProperty("feedback.jenkins.url");
     }
 
+    public String getJenkinsUsername()
+    {
+        return properties.getProperty("feedback.jenkins.username");
+    }
+
+    public String getJenkinsPassword()
+    {
+        return properties.getProperty("feedback.jenkins.password");
+    }
+
     public int getFeedbackPort()
     {
         return getInteger("feedback.port");

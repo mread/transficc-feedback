@@ -25,6 +25,8 @@ for the jar when running. The following properties are available for configurati
 
 
 - `feedback.jenkins.url` is the address for your Jenkins server
+- `feedback.jenkins.username` is the username used for authenticating with your Jenkins server (do not set if authentication is not setup)
+- `feedback.jenkins.password` is the password used for authenticating with your Jenkins server (do not set if authentication is not setup)
 - `feedback.port` the http port TransFICC Feedback GUI will be available on
 - `feedback.job.name` a comma separated list of jobs that will have a specified priority. If a job does not have a specified priority then it appears on the lower half of the Feedback GUI, sorted in red/green/alphabetical order. (Note in the above screenshot the values are feedback.job.name=master-commit,integration-test,acceptance-test,venue-compatibility-test)
 - `feedback.job.priority` the priority of the jobs listed above, ranked in descending order (the higher the number, the higher the given job appears on the Feedback GUI). Note that 1 is reserved for jobs that have not been prioritised (Note in the above screenshot the values are feedback.job.priority=5,4,3,2)
@@ -46,7 +48,6 @@ http://localhost:4567
 - Persist iteration
 - Persist test results (potentially just acceptance) for graphing / analysis
 - Ability to block commits to repository if the master commit build is broken
-- Interact with a Jenkins server that has authentication enabled
 - Fix the never ending green (boxes keep growing in height)
 
 License

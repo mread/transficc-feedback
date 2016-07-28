@@ -79,7 +79,6 @@ public class FeedbackMain
         final Properties properties = createProperties(propertiesFile);
         final FeedbackProperties feedbackProperties = new FeedbackProperties(properties);
         System.setProperty("vertx.cacheDirBase", feedbackProperties.getVertxCacheDir());
-        final String jenkinsUrl = feedbackProperties.getJenkinsUrl();
         final Vertx vertx = Vertx.vertx();
         final HttpServer server = vertx.createHttpServer();
         final EventBus eventBus = vertx.eventBus();
@@ -87,7 +86,8 @@ public class FeedbackMain
         mapper.setVisibility(PropertyAccessor.FIELD, JsonAutoDetect.Visibility.ANY);
         final SafeSerialisation safeSerialisation = new SafeSerialisation(mapper);
         final WebSocketPublisher webSocketPublisher = new WebSocketPublisher(eventBus, safeSerialisation);
-        final JenkinsServer jenkins = new JenkinsServer(URI.create(jenkinsUrl));
+        final JenkinsServer jenkins;
+        jenkins = createJenkinsServer(feedbackProperties);
         final BlockingQueue<PublishableJob> messageQueue = new LinkedBlockingQueue<>();
 
         final ThreadFactory threadFactory = new LoggingThreadFactory(SERVICE_NAME);
@@ -106,6 +106,20 @@ public class FeedbackMain
 
         scheduledExecutorService.scheduleAtFixedRate(jobFinder, 0, 5, TimeUnit.MINUTES);
         server.listen(feedbackProperties.getFeedbackPort());
+    }
+
+    private static JenkinsServer createJenkinsServer(final FeedbackProperties feedbackProperties)
+    {
+        final JenkinsServer jenkins;
+        if (feedbackProperties.getJenkinsUsername() == null)
+        {
+            jenkins = new JenkinsServer(URI.create(feedbackProperties.getJenkinsUrl()));
+        }
+        else
+        {
+            jenkins = new JenkinsServer(URI.create(feedbackProperties.getJenkinsUrl()), feedbackProperties.getJenkinsUsername(), feedbackProperties.getJenkinsPassword());
+        }
+        return jenkins;
     }
 
     private static Properties createProperties(final Optional<File> propertiesFile) throws IOException
