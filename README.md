@@ -4,7 +4,7 @@ A tool for providing visual feedback on the current state of your Jenkins Contin
 
 Requires Java 8 and NPM to build and run. Our compatibility with Jenkins is dependent on the [Jenkins Java Library], so check over there to see if we are compatible with the version of Jenkins you're running.
 
-[screenshot]
+![screenshot]
 
 ## Why?
 
