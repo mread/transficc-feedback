@@ -129,6 +129,11 @@ public class FeedbackMain
                             {
                                 final ClassLoader classLoader = FeedbackMain.class.getClassLoader();
                                 final InputStream serviceProperties = classLoader.getResourceAsStream("feedback.properties");
+                                if (serviceProperties == null)
+                                {
+                                    throw new IllegalArgumentException("No feedback.properties file found on classpath. " +
+                                                                       "Specify the location of one as the first argument, or put it on your classpath");
+                                }
                                 try
                                 {
                                     properties.load(serviceProperties);

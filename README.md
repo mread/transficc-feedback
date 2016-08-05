@@ -1,6 +1,6 @@
 # TransFICC Feedback
 
-A tool for providing visual feedback on the current state of your Jenkins Continuous Delivery pipeline.
+Feedback on the current state of your Jenkins Continuous Delivery pipeline.
 
 Requires Java 8 and NPM to build and run. Our compatibility with Jenkins is dependent on the [Jenkins Java Library], so check over there to see if we are compatible with the version of Jenkins you're running.
 
@@ -15,7 +15,7 @@ We find it useful to see what stage of our pipeline various commits are, and wha
 ## Build
 
 ```sh
-./gradlew build
+./gradlew shadowJar
 ```
 
 ## Configure
@@ -37,7 +37,8 @@ for the jar when running. The following properties are available for configurati
 ## Run
 
 ```sh
-java -jar transficc-feedback-SNAPSHOT-uber.jar.jar
+cd build/libs/
+java -jar transficc-feedback-all.jar
 ```
 Go to (or the port specified for `feedback.port`):
 http://localhost:4567
