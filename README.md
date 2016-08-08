@@ -49,7 +49,9 @@ http://localhost:4567
 - Persist iteration
 - Persist test results (potentially just acceptance) for graphing / analysis
 - Ability to block commits to repository if the master commit build is broken
-- Fix the never ending green (boxes keep growing in height)
+- Fix the never ending green (boxes keep growing in height - apparently only in Chromium)
+- Provide a history of failing/intermittent tests
+- Support HTTPS (required for websocket to work in some corporate infrastructures)
 
 License
 ----
