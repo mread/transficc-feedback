@@ -45,6 +45,7 @@ $(document).ready(function() {
         $.ajax({
             url: '/status',
             type: 'PUT',
+            contentType: 'application/json',
             data: JSON.stringify({
                 message: update
             }),
