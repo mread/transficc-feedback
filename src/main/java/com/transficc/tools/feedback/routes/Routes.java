@@ -12,10 +12,10 @@
  */
 package com.transficc.tools.feedback.routes;
 
+import com.transficc.portals.RouteHandlerFactory;
 import com.transficc.tools.feedback.BreakingNewsService;
 import com.transficc.tools.feedback.IterationRepository;
 import com.transficc.tools.feedback.JobRepository;
-import com.transficc.tools.feedback.util.SafeSerialisation;
 
 
 import io.vertx.core.http.HttpServer;
@@ -36,15 +36,15 @@ public final class Routes
                              final IterationRepository iterationRepository,
                              final BreakingNewsService breakingNewsService,
                              final WebSocketPublisher webSocketPublisher,
-                             final Router router,
-                             final SafeSerialisation safeSerialisation)
+                             final Router router)
     {
         final TemplateEngine engine = HandlebarsTemplateEngine.create();
         router.route().handler(BodyHandler.create());
         router.route("/static/*").handler(StaticHandler.create().setWebRoot("static").setCachingEnabled(true));
         router.get("/").handler(new IndexViewRoute(engine, jobRepository, iterationRepository, breakingNewsService));
-        router.put("/iteration").handler(new UpdateIterationRoute(iterationRepository, safeSerialisation)).consumes("*/json");
-        router.put("/status").handler(new UpdateStatusRoute(breakingNewsService, safeSerialisation));
+
+        router.put("/iteration").handler(RouteHandlerFactory.requestWithPayload(UpdateIterationRoute.IterationUpdate.class, new UpdateIterationRoute(iterationRepository)));
+        router.put("/status").handler(RouteHandlerFactory.requestWithPayload(UpdateStatusRoute.StatusUpdate.class, new UpdateStatusRoute(breakingNewsService)));
         server.websocketHandler(webSocketPublisher);
         server.requestHandler(router::accept);
     }

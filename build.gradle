@@ -97,10 +97,12 @@ dependencies {
     if (rootProject.ext.has('libs'))
     {
         compile project(':transficc-functionality')
+        compile project(':portals')
     }
     else
     {
         compile 'com.transficc:transficc-functionality:1.0.1'
+        compile 'com.transficc:portal-value-objects:1.0.0'
     }
     compile libs.'commons-codec'
     compile libs.'commons-logging'

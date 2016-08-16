@@ -100,7 +100,7 @@ public class FeedbackMain
                                                               System::currentTimeMillis);
         final JobService jobService = new JobService(jobRepository, messageBus, jenkinsFacade, scheduledExecutorService);
         final IterationRepository iterationRepository = new IterationRepository(messageBus);
-        Routes.setup(server, jobRepository, iterationRepository, new BreakingNewsService(messageBus), webSocketPublisher, Router.router(vertx), safeSerialisation);
+        Routes.setup(server, jobRepository, iterationRepository, new BreakingNewsService(messageBus), webSocketPublisher, Router.router(vertx));
         final JobFinder jobFinder = new JobFinder(jobService, jenkinsFacade
         );
 

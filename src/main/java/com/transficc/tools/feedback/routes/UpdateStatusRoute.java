@@ -12,36 +12,31 @@
  */
 package com.transficc.tools.feedback.routes;
 
+import com.transficc.portals.DecodingHandler;
+import com.transficc.portals.PortalRequest;
+import com.transficc.portals.ResponseHelper;
 import com.transficc.tools.feedback.BreakingNewsService;
-import com.transficc.tools.feedback.util.SafeSerialisation;
 
 
-import io.vertx.core.Handler;
 import io.vertx.ext.web.RoutingContext;
 
-public class UpdateStatusRoute implements Handler<RoutingContext>
+public class UpdateStatusRoute implements DecodingHandler<UpdateStatusRoute.StatusUpdate>
 {
     private final BreakingNewsService breakingNewsService;
-    private final SafeSerialisation safeSerialisation;
 
-    public UpdateStatusRoute(final BreakingNewsService breakingNewsService, final SafeSerialisation safeSerialisation)
+    public UpdateStatusRoute(final BreakingNewsService breakingNewsService)
     {
         this.breakingNewsService = breakingNewsService;
-        this.safeSerialisation = safeSerialisation;
     }
 
     @Override
-    public void handle(final RoutingContext routingContext)
+    public void handle(final RoutingContext event, final StatusUpdate value)
     {
-        final StatusUpdate statusUpdate = safeSerialisation.deserialise(routingContext.getBodyAsString(), StatusUpdate.class);
-        breakingNewsService.status(statusUpdate.message);
-        routingContext.
-                response().
-                setStatusCode(201)
-                .end();
+        breakingNewsService.status(value.message);
+        ResponseHelper.ok(event.response());
     }
 
-    private static class StatusUpdate
+    public static final class StatusUpdate implements PortalRequest
     {
         private String message;
     }

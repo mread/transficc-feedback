@@ -12,36 +12,31 @@
  */
 package com.transficc.tools.feedback.routes;
 
+import com.transficc.portals.DecodingHandler;
+import com.transficc.portals.PortalRequest;
+import com.transficc.portals.ResponseHelper;
 import com.transficc.tools.feedback.IterationRepository;
-import com.transficc.tools.feedback.util.SafeSerialisation;
 
 
-import io.vertx.core.Handler;
 import io.vertx.ext.web.RoutingContext;
 
-public class UpdateIterationRoute implements Handler<RoutingContext>
+public class UpdateIterationRoute implements DecodingHandler<UpdateIterationRoute.IterationUpdate>
 {
     private final IterationRepository iterationRepository;
-    private final SafeSerialisation safeSerialisation;
 
-    public UpdateIterationRoute(final IterationRepository iterationRepository, final SafeSerialisation safeSerialisation)
+    public UpdateIterationRoute(final IterationRepository iterationRepository)
     {
         this.iterationRepository = iterationRepository;
-        this.safeSerialisation = safeSerialisation;
     }
 
     @Override
-    public void handle(final RoutingContext routingContext)
+    public void handle(final RoutingContext event, final IterationUpdate value)
     {
-        final IterationUpdate iteration = safeSerialisation.deserialise(routingContext.getBodyAsString(), IterationUpdate.class);
-        iterationRepository.iteration(iteration.iteration);
-        routingContext.
-                response().
-                setStatusCode(201).
-                end();
+        iterationRepository.iteration(value.iteration);
+        ResponseHelper.ok(event.response());
     }
 
-    private static class IterationUpdate
+    public static final class IterationUpdate implements PortalRequest
     {
         private String iteration;
     }
