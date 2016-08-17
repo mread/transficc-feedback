@@ -21,7 +21,7 @@ var missedHeartBeats = 0;
 $(document).ready(function() {
 
     function setIteration () {
-        var iteration = prompt("Please enter an iteration number", "it123");
+        var iteration = prompt("Please enter an iteration number");
         if (iteration !== null) {
             $.ajax({
                 url: '/iteration',
