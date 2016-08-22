@@ -31,19 +31,21 @@ public class Job
     private volatile String revision = "";
     private volatile JobStatus jobStatus;
     private final boolean shouldDisplayCommentsForJob;
+    private final VersionControl versionControl;
     private volatile int buildNumber = 0;
     private volatile double jobCompletionPercentage;
     private volatile String[] comments = new String[0];
     private volatile boolean building;
     private volatile TestResults jobsTestResults;
 
-    public Job(final String name, final String url, final int priority, final JobStatus jobStatus, final boolean shouldDisplayCommentsForJob)
+    public Job(final String name, final String url, final int priority, final JobStatus jobStatus, final boolean shouldDisplayCommentsForJob, final VersionControl versionControl)
     {
         this.name = name;
         this.url = url;
         this.priority = priority;
         this.jobStatus = jobStatus;
         this.shouldDisplayCommentsForJob = shouldDisplayCommentsForJob;
+        this.versionControl = versionControl;
     }
 
     public void maybeUpdateAndPublish(final String revision,
@@ -85,8 +87,23 @@ public class Job
 
     public PublishableJob createPublishable()
     {
-        final String revision = this.revision.length() > GIT_HASH_LENGTH ? this.revision.substring(0, GIT_HASH_LENGTH) : this.revision;
+        final String revision = getRevision();
         return new PublishableJob(name, url, priority, revision, jobStatus, buildNumber, jobCompletionPercentage, comments, building, jobsTestResults);
+    }
+
+    private String getRevision()
+    {
+        final String calculatedRevision;
+        switch (versionControl)
+        {
+            case GIT:
+                calculatedRevision = revision.length() > GIT_HASH_LENGTH ? revision.substring(0, GIT_HASH_LENGTH) : revision;
+                break;
+            case SVN:
+            default:
+                calculatedRevision = revision;
+        }
+        return calculatedRevision;
     }
 
     private boolean isThereAnUpdate(final String revision, final JobStatus jobStatus, final int buildNumber, final double jobCompletionPercentage, final boolean building)

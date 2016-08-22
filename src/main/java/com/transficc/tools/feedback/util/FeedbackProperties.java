@@ -16,6 +16,8 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
 
+import com.transficc.tools.feedback.VersionControl;
+
 public class FeedbackProperties
 {
     private final Properties properties;
@@ -70,6 +72,11 @@ public class FeedbackProperties
     public String getMasterJobName()
     {
         return properties.getProperty("feedback.job.master");
+    }
+
+    public VersionControl getVersionControl()
+    {
+        return VersionControl.valueOf(properties.getProperty("feedback.versioncontrol").toUpperCase());
     }
 
     private int getInteger(final String key)

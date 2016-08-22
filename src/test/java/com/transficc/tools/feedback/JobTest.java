@@ -13,12 +13,15 @@
 package com.transficc.tools.feedback;
 
 import com.transficc.tools.feedback.messaging.MessageBus;
+import com.transficc.tools.feedback.messaging.PublishableJob;
 
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
+import static org.hamcrest.core.Is.is;
+import static org.junit.Assert.assertThat;
 import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -31,7 +34,7 @@ public class JobTest
 {
     @Mock
     private MessageBus messageBus;
-    private final Job job = new Job("tom", "url", 3, JobStatus.SUCCESS, false);
+    private final Job job = new Job("tom", "url", 3, JobStatus.SUCCESS, false, VersionControl.GIT);
 
     @Before
     public void setup()
@@ -69,5 +72,26 @@ public class JobTest
         job.maybeUpdateAndPublish("revision2", JobStatus.SUCCESS, 2, 10, messageBus, new String[0], false, null);
         job.maybeUpdateAndPublish("revision2", JobStatus.SUCCESS, 2, 110, messageBus, new String[0], false, null);
         verify(messageBus, times(3)).sendUpdate(job);
+    }
+
+    @Test
+    public void shouldTruncateGitHashes()
+    {
+        job.maybeUpdateAndPublish("revision21", JobStatus.SUCCESS, 2, 0, messageBus, new String[0], false, null);
+
+        final PublishableJob publishable = job.createPublishable();
+
+        assertThat(publishable.getRevision(), is("revisio"));
+    }
+
+    @Test
+    public void shouldNotRuncateRevisionIfVersionControlIsSvn()
+    {
+        final Job job = new Job("tom", "url", 3, JobStatus.SUCCESS, false, VersionControl.SVN);
+        job.maybeUpdateAndPublish("revision21", JobStatus.SUCCESS, 2, 0, messageBus, new String[0], false, null);
+
+        final PublishableJob publishable = job.createPublishable();
+
+        assertThat(publishable.getRevision(), is("revision21"));
     }
 }

@@ -33,13 +33,19 @@ public class JenkinsFacade
     private final JobPrioritiesRepository jobPrioritiesRepository;
     private final String masterJobName;
     private final ClockService clockService;
+    private final VersionControl versionControl;
 
-    public JenkinsFacade(final JenkinsServer jenkins, final JobPrioritiesRepository jobPrioritiesRepository, final String masterJobName, final ClockService clockService)
+    public JenkinsFacade(final JenkinsServer jenkins,
+                         final JobPrioritiesRepository jobPrioritiesRepository,
+                         final String masterJobName,
+                         final ClockService clockService,
+                         final VersionControl versionControl)
     {
         this.jenkins = jenkins;
         this.jobPrioritiesRepository = jobPrioritiesRepository;
         this.masterJobName = masterJobName;
         this.clockService = clockService;
+        this.versionControl = versionControl;
     }
 
     public Result<Integer, List<Job>> getAllJobs(final Predicate<String> filter)
@@ -51,7 +57,7 @@ public class JenkinsFacade
                                           .stream()
                                           .filter(job -> filter.test(job.getName()))
                                           .map(job -> new Job(job.getName(), job.getUrl(), jobPrioritiesRepository.getPriorityForJob(job.getName()), JobStatus.DISABLED,
-                                                              masterJobName.equals(job.getName())))
+                                                              masterJobName.equals(job.getName()), versionControl))
                                           .collect(Collectors.toList()));
         }
         catch (final IOException e)
