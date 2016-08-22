@@ -32,6 +32,7 @@ import com.fasterxml.jackson.annotation.PropertyAccessor;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.offbytwo.jenkins.JenkinsServer;
 import com.transficc.functionality.Optionality;
+import com.transficc.tools.feedback.dao.IterationDao;
 import com.transficc.tools.feedback.messaging.MessageBus;
 import com.transficc.tools.feedback.messaging.MessageSubscriber;
 import com.transficc.tools.feedback.messaging.PublishableJob;
@@ -51,8 +52,10 @@ import org.apache.logging.log4j.core.config.builder.api.ConfigurationBuilderFact
 import org.apache.logging.log4j.core.config.builder.api.FilterComponentBuilder;
 import org.apache.logging.log4j.core.config.builder.api.LayoutComponentBuilder;
 import org.apache.logging.log4j.core.config.builder.impl.BuiltConfiguration;
+import org.flywaydb.core.Flyway;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.jdbc.datasource.DriverManagerDataSource;
 
 
 import io.vertx.core.Vertx;
@@ -90,6 +93,15 @@ public class FeedbackMain
         jenkins = createJenkinsServer(feedbackProperties);
         final BlockingQueue<PublishableJob> messageQueue = new LinkedBlockingQueue<>();
 
+        final DriverManagerDataSource dataSource = new DriverManagerDataSource();
+        dataSource.setDriverClassName("org.h2.Driver");
+        dataSource.setUrl("jdbc:h2:~/data/feedback");
+        dataSource.setUsername("feed");
+
+        final Flyway flyway = new Flyway();
+        flyway.setDataSource(dataSource);
+        flyway.migrate();
+
         final ThreadFactory threadFactory = new LoggingThreadFactory(SERVICE_NAME);
         final ExecutorService statusCheckerService = Executors.newFixedThreadPool(1, threadFactory);
         final ScheduledExecutorService scheduledExecutorService = Executors.newScheduledThreadPool(4, threadFactory);
@@ -99,7 +111,7 @@ public class FeedbackMain
         final JenkinsFacade jenkinsFacade = new JenkinsFacade(jenkins, new JobPrioritiesRepository(feedbackProperties.getJobsWithPriorities()), feedbackProperties.getMasterJobName(),
                                                               System::currentTimeMillis, feedbackProperties.getVersionControl());
         final JobService jobService = new JobService(jobRepository, messageBus, jenkinsFacade, scheduledExecutorService);
-        final IterationRepository iterationRepository = new IterationRepository(messageBus);
+        final IterationRepository iterationRepository = new IterationRepository(messageBus, new IterationDao(dataSource));
         Routes.setup(server, jobRepository, iterationRepository, new BreakingNewsService(messageBus), webSocketPublisher, Router.router(vertx));
         final JobFinder jobFinder = new JobFinder(jobService, jenkinsFacade
         );

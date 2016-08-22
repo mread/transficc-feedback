@@ -12,17 +12,21 @@
  */
 package com.transficc.tools.feedback;
 
+import com.transficc.tools.feedback.dao.IterationDao;
 import com.transficc.tools.feedback.messaging.MessageBus;
 
 public class IterationRepository
 {
     private final MessageBus messageBus;
+    private final IterationDao iterationDao;
     //TODO: get the iteration value persisted
     private volatile String iteration = "it1";
 
-    public IterationRepository(final MessageBus messageBus)
+    public IterationRepository(final MessageBus messageBus, final IterationDao iterationDao)
     {
         this.messageBus = messageBus;
+        this.iterationDao = iterationDao;
+        this.iteration = iterationDao.getIteration();
     }
 
     public String iteration()
@@ -32,7 +36,7 @@ public class IterationRepository
 
     public void iteration(final String iteration)
     {
-        this.iteration = iteration;
+        this.iteration = iterationDao.updateIteration(iteration);
         messageBus.iterationUpdate(iteration);
     }
 }
