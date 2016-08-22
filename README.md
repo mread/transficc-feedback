@@ -45,7 +45,6 @@ http://localhost:4567
 
 ## TODO
 
-- Compatibility for SVN (currently only supports Git hashes)
 - Persist iteration
 - Persist test results (potentially just acceptance) for graphing / analysis
 - Ability to block commits to repository if the master commit build is broken
