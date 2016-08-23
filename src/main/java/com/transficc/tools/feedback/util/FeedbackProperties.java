@@ -12,19 +12,30 @@
  */
 package com.transficc.tools.feedback.util;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Properties;
 
+import com.transficc.functionality.Optionality;
+import com.transficc.tools.feedback.FeedbackMain;
 import com.transficc.tools.feedback.VersionControl;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class FeedbackProperties
 {
+    private static final Logger LOGGER = LoggerFactory.getLogger(FeedbackProperties.class);
     private final Properties properties;
 
-    public FeedbackProperties(final Properties properties)
+    public FeedbackProperties(final Optional<File> propertiesFile)
     {
-        this.properties = properties;
+        this.properties = createProperties(propertiesFile);
     }
 
     public String getVertxCacheDir()
@@ -90,4 +101,40 @@ public class FeedbackProperties
         return property.split(",");
     }
 
+    private static Properties createProperties(final Optional<File> propertiesFile)
+    {
+        final Properties properties = new Properties();
+        Optionality.consume(propertiesFile, () ->
+                            {
+                                final ClassLoader classLoader = FeedbackMain.class.getClassLoader();
+                                final InputStream serviceProperties = classLoader.getResourceAsStream("feedback.properties");
+                                if (serviceProperties == null)
+                                {
+                                    throw new IllegalArgumentException("No feedback.properties file found on classpath. " +
+                                                                       "Specify the location of one as the first argument, or put it on your classpath");
+                                }
+                                try
+                                {
+                                    properties.load(serviceProperties);
+                                }
+                                catch (final IOException e)
+                                {
+                                    LOGGER.error("Failed to load properties", e);
+                                }
+                            },
+                            (File file) ->
+                            {
+                                try (final FileInputStream inStream = new FileInputStream(file))
+                                {
+                                    properties.load(inStream);
+                                }
+                                catch (final IOException e)
+                                {
+                                    LOGGER.error("Failed to load properties", e);
+                                }
+
+                            });
+        return properties;
+
+    }
 }

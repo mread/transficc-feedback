@@ -13,12 +13,9 @@
 package com.transficc.tools.feedback;
 
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
-import java.io.InputStream;
 import java.net.URI;
 import java.util.Optional;
-import java.util.Properties;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -31,7 +28,6 @@ import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.PropertyAccessor;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.offbytwo.jenkins.JenkinsServer;
-import com.transficc.functionality.Optionality;
 import com.transficc.tools.feedback.dao.IterationDao;
 import com.transficc.tools.feedback.messaging.MessageBus;
 import com.transficc.tools.feedback.messaging.MessageSubscriber;
@@ -54,8 +50,6 @@ import org.apache.logging.log4j.core.config.builder.api.LayoutComponentBuilder;
 import org.apache.logging.log4j.core.config.builder.impl.BuiltConfiguration;
 import org.flywaydb.core.Flyway;
 import org.h2.jdbcx.JdbcConnectionPool;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 
 import io.vertx.core.Vertx;
@@ -74,13 +68,10 @@ public class FeedbackMain
         configureLogging(SERVICE_NAME);
     }
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(FeedbackMain.class);
-
     public static void main(final String[] args) throws IOException
     {
         final Optional<File> propertiesFile = args.length == 1 ? Optional.of(new File(args[0])) : Optional.empty();
-        final Properties properties = createProperties(propertiesFile);
-        final FeedbackProperties feedbackProperties = new FeedbackProperties(properties);
+        final FeedbackProperties feedbackProperties = new FeedbackProperties(propertiesFile);
         System.setProperty("vertx.cacheDirBase", feedbackProperties.getVertxCacheDir());
         final Vertx vertx = Vertx.vertx();
         final HttpServer server = vertx.createHttpServer();
@@ -129,43 +120,6 @@ public class FeedbackMain
             jenkins = new JenkinsServer(URI.create(feedbackProperties.getJenkinsUrl()), feedbackProperties.getJenkinsUsername(), feedbackProperties.getJenkinsPassword());
         }
         return jenkins;
-    }
-
-    private static Properties createProperties(final Optional<File> propertiesFile) throws IOException
-    {
-        final Properties properties = new Properties();
-        Optionality.consume(propertiesFile, () ->
-                            {
-                                final ClassLoader classLoader = FeedbackMain.class.getClassLoader();
-                                final InputStream serviceProperties = classLoader.getResourceAsStream("feedback.properties");
-                                if (serviceProperties == null)
-                                {
-                                    throw new IllegalArgumentException("No feedback.properties file found on classpath. " +
-                                                                       "Specify the location of one as the first argument, or put it on your classpath");
-                                }
-                                try
-                                {
-                                    properties.load(serviceProperties);
-                                }
-                                catch (final IOException e)
-                                {
-                                    LOGGER.error("Failed to load properties", e);
-                                }
-                            },
-                            (File file) ->
-                            {
-                                try (final FileInputStream inStream = new FileInputStream(file))
-                                {
-                                    properties.load(inStream);
-                                }
-                                catch (final IOException e)
-                                {
-                                    LOGGER.error("Failed to load properties", e);
-                                }
-
-                            });
-        return properties;
-
     }
 
     private static void configureLogging(final String serviceName)
