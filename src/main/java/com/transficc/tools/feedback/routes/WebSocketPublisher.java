@@ -42,27 +42,17 @@ public final class WebSocketPublisher implements Handler<ServerWebSocket>
 
     public void onJobUpdate(final PublishableJob job)
     {
-        sendMessage("jobUpdate", job);
+        broadcastMessage("jobUpdate", job);
     }
 
     public void onStatusUpdate(final PublishableStatus statusUpdate)
     {
-        sendMessage("statusUpdate", statusUpdate);
+        broadcastMessage("statusUpdate", statusUpdate);
     }
 
     public void onIterationUpdate(final PublishableIteration iterationUpdate)
     {
-        sendMessage("iterationUpdate", iterationUpdate);
-    }
-
-    private void sendMessage(final String type, final Object content)
-    {
-        final Iterator<String> iterator = sessions.iterator();
-        final String outbound = safeSerialisation.serisalise(new Outbound(type, content));
-        while (iterator.hasNext())
-        {
-            eventBus.send(iterator.next(), outbound);
-        }
+        broadcastMessage("iterationUpdate", iterationUpdate);
     }
 
     @Override
@@ -72,6 +62,16 @@ public final class WebSocketPublisher implements Handler<ServerWebSocket>
         sessions.addLast(id);
         socket.closeHandler(event -> sessions.remove(id));
         socket.frameHandler(frame -> eventBus.send(id, safeSerialisation.serisalise(new Outbound("heartBeat", System.currentTimeMillis()))));
+    }
+
+    private void broadcastMessage(final String type, final Object content)
+    {
+        final Iterator<String> iterator = sessions.iterator();
+        final String outbound = safeSerialisation.serisalise(new Outbound(type, content));
+        while (iterator.hasNext())
+        {
+            eventBus.send(iterator.next(), outbound);
+        }
     }
 
     @SuppressFBWarnings(value = "URF_UNREAD_FIELD", justification = "Serialised object")

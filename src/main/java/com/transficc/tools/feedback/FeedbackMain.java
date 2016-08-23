@@ -53,7 +53,6 @@ import org.h2.jdbcx.JdbcConnectionPool;
 
 
 import io.vertx.core.Vertx;
-import io.vertx.core.eventbus.EventBus;
 import io.vertx.core.http.HttpServer;
 import io.vertx.core.json.Json;
 import io.vertx.ext.web.Router;
@@ -75,11 +74,10 @@ public class FeedbackMain
         System.setProperty("vertx.cacheDirBase", feedbackProperties.getVertxCacheDir());
         final Vertx vertx = Vertx.vertx();
         final HttpServer server = vertx.createHttpServer();
-        final EventBus eventBus = vertx.eventBus();
         final ObjectMapper mapper = Json.mapper;
         mapper.setVisibility(PropertyAccessor.FIELD, JsonAutoDetect.Visibility.ANY);
         final SafeSerialisation safeSerialisation = new SafeSerialisation(mapper);
-        final WebSocketPublisher webSocketPublisher = new WebSocketPublisher(eventBus, safeSerialisation);
+        final WebSocketPublisher webSocketPublisher = new WebSocketPublisher(vertx.eventBus(), safeSerialisation);
         final JenkinsServer jenkins;
         jenkins = createJenkinsServer(feedbackProperties);
         final BlockingQueue<PublishableJob> messageQueue = new LinkedBlockingQueue<>();
@@ -88,6 +86,7 @@ public class FeedbackMain
 
         final Flyway flyway = new Flyway();
         flyway.setDataSource(dataSource);
+        flyway.clean();
         flyway.migrate();
 
         final ThreadFactory threadFactory = new LoggingThreadFactory(SERVICE_NAME);
@@ -101,8 +100,7 @@ public class FeedbackMain
         final JobService jobService = new JobService(jobRepository, messageBus, jenkinsFacade, scheduledExecutorService);
         final IterationRepository iterationRepository = new IterationRepository(messageBus, new IterationDao(dataSource));
         Routes.setup(server, jobRepository, iterationRepository, new BreakingNewsService(messageBus), webSocketPublisher, Router.router(vertx));
-        final JobFinder jobFinder = new JobFinder(jobService, jenkinsFacade
-        );
+        final JobFinder jobFinder = new JobFinder(jobService, jenkinsFacade);
 
         scheduledExecutorService.scheduleAtFixedRate(jobFinder, 0, 5, TimeUnit.MINUTES);
         server.listen(feedbackProperties.getFeedbackPort());
