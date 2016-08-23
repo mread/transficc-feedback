@@ -86,7 +86,6 @@ public class FeedbackMain
 
         final Flyway flyway = new Flyway();
         flyway.setDataSource(dataSource);
-        flyway.clean();
         flyway.migrate();
 
         final ThreadFactory threadFactory = new LoggingThreadFactory(SERVICE_NAME);
