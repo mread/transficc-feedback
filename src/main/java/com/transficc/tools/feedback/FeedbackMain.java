@@ -53,9 +53,9 @@ import org.apache.logging.log4j.core.config.builder.api.FilterComponentBuilder;
 import org.apache.logging.log4j.core.config.builder.api.LayoutComponentBuilder;
 import org.apache.logging.log4j.core.config.builder.impl.BuiltConfiguration;
 import org.flywaydb.core.Flyway;
+import org.h2.jdbcx.JdbcConnectionPool;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.jdbc.datasource.DriverManagerDataSource;
 
 
 import io.vertx.core.Vertx;
@@ -93,10 +93,7 @@ public class FeedbackMain
         jenkins = createJenkinsServer(feedbackProperties);
         final BlockingQueue<PublishableJob> messageQueue = new LinkedBlockingQueue<>();
 
-        final DriverManagerDataSource dataSource = new DriverManagerDataSource();
-        dataSource.setDriverClassName("org.h2.Driver");
-        dataSource.setUrl("jdbc:h2:~/data/feedback");
-        dataSource.setUsername("feed");
+        final JdbcConnectionPool dataSource = JdbcConnectionPool.create("jdbc:h2:~/data/feedback", "sa", "sa");
 
         final Flyway flyway = new Flyway();
         flyway.setDataSource(dataSource);

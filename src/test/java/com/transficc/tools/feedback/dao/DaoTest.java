@@ -7,10 +7,10 @@ import java.io.UncheckedIOException;
 import javax.sql.DataSource;
 
 import org.flywaydb.core.Flyway;
+import org.h2.jdbcx.JdbcConnectionPool;
 import org.junit.After;
 import org.junit.Before;
 import org.springframework.jdbc.datasource.DataSourceTransactionManager;
-import org.springframework.jdbc.datasource.DriverManagerDataSource;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.DefaultTransactionDefinition;
 
@@ -59,10 +59,6 @@ public abstract class DaoTest
 
     private DataSource createDataSource()
     {
-        final DriverManagerDataSource dataSource = new DriverManagerDataSource();
-        dataSource.setDriverClassName("org.h2.Driver");
-        dataSource.setUrl("jdbc:h2:" + dataSourceFile.toString());
-        dataSource.setUsername("feed");
-        return dataSource;
+        return JdbcConnectionPool.create("jdbc:h2:" + dataSourceFile.toString(), "sa", "sa");
     }
 }
