@@ -93,7 +93,7 @@ public class FeedbackMain
         jenkins = createJenkinsServer(feedbackProperties);
         final BlockingQueue<PublishableJob> messageQueue = new LinkedBlockingQueue<>();
 
-        final JdbcConnectionPool dataSource = JdbcConnectionPool.create("jdbc:h2:~/data/feedback", "sa", "sa");
+        final JdbcConnectionPool dataSource = JdbcConnectionPool.create("jdbc:h2:~/data/feedback", "feedback", "");
 
         final Flyway flyway = new Flyway();
         flyway.setDataSource(dataSource);
