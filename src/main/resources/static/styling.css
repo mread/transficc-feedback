@@ -14,10 +14,7 @@ body, table {
     font-size: 16px;
     font-family: monospace;
 }
-.job a:link,
-.job a:active,
-.job a:visited,
-.job a:hover {
+.job a {
     color: #000000;
 }
 
@@ -25,8 +22,16 @@ body, table {
     background-color: #33cc33;
 }
 
+.build-status-success a {
+    color: #000000;
+}
+
 .build-status-error {
     background-color: #EE2222;
+}
+
+.build-status-error a {
+    color: #FFF;
 }
 
 .build-status-disabled {
