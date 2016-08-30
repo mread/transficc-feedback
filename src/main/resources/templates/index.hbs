@@ -42,8 +42,8 @@
                             <table>
                                 <tr>
                                     <td style="vertical-align:top;">
-                                        <div><a href="{{url}}{{buildNumber}}">{{revision}}</a></div>
-                                        <div><a href="{{url}}">{{name}}</a></div>
+                                        <div><a target="_blank" href="{{url}}{{buildNumber}}">{{revision}}</a></div>
+                                        <div><a target="_blank" href="{{url}}">{{name}}</a></div>
                                         <div class="test-report" {{#unless jobsTestResults}}hidden{{/unless}}>
                                                 <span>Passed: {{jobsTestResults.passCount}}</span>
                                                 <span>Failed: {{jobsTestResults.failCount}}</span>
