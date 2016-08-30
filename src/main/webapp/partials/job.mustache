@@ -8,8 +8,8 @@
             <table>
                 <tr>
                     <td style="vertical-align:top;">
-                        <div><a href="{{url}}{{buildNumber}}">{{revision}}</a></div>
-                        <div><a href="{{url}}">{{name}}</a></div>
+                        <div><a target="_blank" href="{{url}}{{buildNumber}}">{{revision}}</a></div>
+                        <div><a target="_blank" href="{{url}}">{{name}}</a></div>
                         <div class="test-report" {{#shouldHideTestReport}}hidden{{/shouldHideTestReport}}>
                             <span>Passed: {{passCount}}</span>
                             <span>Failed: {{failCount}}</span>
