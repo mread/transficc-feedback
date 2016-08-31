@@ -60,6 +60,7 @@ public class GetLatestJobBuildInformation implements Runnable
                                                job.maybeUpdateAndPublish(buildInformation.getRevision(),
                                                                          buildInformation.getJobStatus(),
                                                                          buildInformation.getNumber(),
+                                                                         buildInformation.getTimestamp(),
                                                                          buildInformation.getJobCompletionPercentage(),
                                                                          messageBus,
                                                                          buildInformation.getComments(),

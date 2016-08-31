@@ -1,4 +1,8 @@
-<div id="{{name}}" class="job build-status-{{jobStatus}}" data-title="{{name}}" data-job-status="{{jobStatus}}" data-priority="{{priority}}">
+<div id="{{name}}"
+     class="job build-status-{{jobStatus}}"
+     data-title="{{name}}"
+     data-job-status="{{jobStatus}}"
+     data-priority="{{priority}}">
     <div class="row">
         <div class="col-md-12">
             <table>
@@ -11,6 +15,7 @@
                             <span>Failed: {{failCount}}</span>
                             <span>Ignored: {{skipCount}}</span>
                         </div>
+                        <div class="timestamp" data-timestamp="{{timestamp}}"></div>
                     </td>
                     <td style="vertical-align:top;">
                         {{#comments}}

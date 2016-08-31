@@ -37,6 +37,7 @@ public class Job
     private volatile String[] comments = new String[0];
     private volatile boolean building;
     private volatile TestResults jobsTestResults;
+    private volatile long timestamp;
 
     public Job(final String name, final String url, final int priority, final JobStatus jobStatus, final boolean shouldDisplayCommentsForJob, final VersionControl versionControl)
     {
@@ -51,6 +52,7 @@ public class Job
     public void maybeUpdateAndPublish(final String revision,
                                       final JobStatus jobStatus,
                                       final int buildNumber,
+                                      final long timestamp,
                                       final double jobCompletionPercentage,
                                       final MessageBus messageBus,
                                       final String[] comments,
@@ -63,6 +65,7 @@ public class Job
             this.revision = "".equals(revision) ? this.revision : revision;
             this.jobStatus = jobStatus;
             this.buildNumber = buildNumber;
+            this.timestamp = timestamp;
             this.jobCompletionPercentage = jobCompletionPercentage;
             this.comments = shouldDisplayCommentsForJob ? comments : NO_COMMENTS;
             this.building = building;
@@ -88,7 +91,7 @@ public class Job
     public PublishableJob createPublishable()
     {
         final String revision = getRevision();
-        return new PublishableJob(name, url, priority, revision, jobStatus, buildNumber, jobCompletionPercentage, comments, building, jobsTestResults);
+        return new PublishableJob(name, url, priority, revision, jobStatus, buildNumber, timestamp, jobCompletionPercentage, comments, building, jobsTestResults);
     }
 
     private String getRevision()
@@ -122,6 +125,7 @@ public class Job
                ", revision='" + revision + '\'' +
                ", jobStatus=" + jobStatus +
                ", buildNumber=" + buildNumber +
+               ", timestamp=" + timestamp +
                ", jobCompletionPercentage=" + jobCompletionPercentage +
                ", comments=" + Arrays.toString(comments) +
                '}';
