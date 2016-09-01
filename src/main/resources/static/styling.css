@@ -23,7 +23,7 @@ body, table {
     background-color: #33cc33;
 }
 
-.build-status-success a {
+.build-status-success td, .build-status-success a {
     color: #000000;
 }
 
@@ -31,8 +31,8 @@ body, table {
     background-color: #EE2222;
 }
 
-.build-status-error *, .build-status-error a {
-    color: #FFFFFF;
+.build-status-error td, .build-status-error a {
+    color: #FFF;
 }
 
 .build-status-disabled {
