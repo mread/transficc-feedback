@@ -84,7 +84,8 @@ $(document).ready(function() {
 
     function updateTimestamps() {
         $('.timestamp').each(function() {
-            $(this).text(moment($(this).data('timestamp')).fromNow());
+            var timestamp = $(this).data('timestamp');
+            timestamp == 0 ? $(this).text("") : $(this).text(moment(timestamp).fromNow());
         });
     }
 
@@ -147,6 +148,8 @@ $(document).ready(function() {
                             timestamp: job.timestamp
                         }));
 
+            updateTimestamps();
+
             if (dataPriority == 0) {
                 if (currentJobStatus !== 'error' && newJobStatus === 'error') {
                     var firstJob = _.chain($('.job')).
@@ -176,7 +179,6 @@ $(document).ready(function() {
             $('#iteration').html(data.value.iteration);
         } else if (type === 'heartBeat') {
             missedHeartBeats = 0;
-            updateTimestamps();
         }
     }
 
