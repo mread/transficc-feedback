@@ -32,6 +32,7 @@ public class PublishableJob
     private final String[] comments;
     private final boolean shouldHideProgressBar;
     private final boolean shouldBeFullScreen;
+    private final boolean isMasterJob;
     private final JenkinsFacade.TestResults jobsTestResults;
     private final boolean shouldHideTestResults;
 
@@ -58,6 +59,7 @@ public class PublishableJob
         this.comments = comments.clone();
         this.shouldHideProgressBar = !building;
         this.shouldBeFullScreen = priority > 0;
+        this.isMasterJob = priority == 100;
         this.shouldHideTestResults = jobsTestResults == null;
         this.jobsTestResults = jobsTestResults;
     }
@@ -115,6 +117,11 @@ public class PublishableJob
     public boolean isShouldBeFullScreen()
     {
         return shouldBeFullScreen;
+    }
+
+    public boolean isMasterJob()
+    {
+        return isMasterJob;
     }
 
     public boolean isShouldHideTestResults()
