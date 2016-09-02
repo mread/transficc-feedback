@@ -155,11 +155,30 @@ $(document).ready(function() {
                       }).
                       head().
                       value();
-                      //After $job had replacedWith called on it, we lose the reference to the job in the DOM, so just do this for now....
-                      $('#' + job.name).parent().insertBefore($(firstJob).parent());
+                    //After $job had replacedWith called on it, we lose the reference to the job in the DOM, so just do this for now....
+                    $('#' + job.name).parent().insertBefore($(firstJob).parent());
                 } else if (currentJobStatus === 'error' && newJobStatus !== 'error') {
                     //move to alphabetical order
-                    location.reload();
+                    var jobToInsertBefore = _.chain($('.job')).
+                      filter(function(job) {
+                        return $(job).attr('data-priority') == 0 && $(job).attr('data-job-status').toLowerCase() !== 'error';
+                      }).
+                      find(function (job) {
+                        return $(job).attr('data-title') > job.name;
+                      }).
+                      value();
+
+                    if (jobToInsertBefore === null) {
+                        var lastJob = _.chain($('.job')).
+                          filter(function(job) {
+                            return $(job).attr('data-priority') == 0;
+                          }).
+                          last().
+                          value();
+                        $('#' + job.name).parent().insertBefore($(lastJob).parent());
+                    } else {
+                        $('#' + job.name).parent().insertBefore($(jobToInsertBefore).parent());
+                    }
                 }
                 regulariseJobHeight();
             }
