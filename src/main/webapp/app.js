@@ -12,6 +12,7 @@
  */
 var $ = require('jquery');
 var _ = require('lodash');
+var moment = require('moment');
 var jobTemplate = require('./partials/job.mustache');
 window.$ = window.jQuery = $;
 var heartBeatInterval = null;
@@ -81,6 +82,12 @@ $(document).ready(function() {
         }
     }
 
+    function updateTimestamps() {
+        $('.timestamp').each(function() {
+            $(this).text(moment($(this).data('timestamp')).fromNow());
+        });
+    }
+
     function onOpen() {
         if (heartBeatInterval === null) {
             missedHeartBeats = 0;
@@ -136,7 +143,8 @@ $(document).ready(function() {
                             shouldHideTestReport: job.shouldHideTestResults,
                             passCount: !!testResults && testResults.passCount,
                             failCount: !!testResults && testResults.failCount,
-                            skipCount: !!testResults && testResults.skipCount
+                            skipCount: !!testResults && testResults.skipCount,
+                            timestamp: job.timestamp
                         }));
 
             if (dataPriority == 0) {
@@ -168,6 +176,7 @@ $(document).ready(function() {
             $('#iteration').html(data.value.iteration);
         } else if (type === 'heartBeat') {
             missedHeartBeats = 0;
+            updateTimestamps();
         }
     }
 

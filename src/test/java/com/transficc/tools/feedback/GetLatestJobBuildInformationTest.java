@@ -88,7 +88,7 @@ public class GetLatestJobBuildInformationTest
                                                       .setField("building", false)
                                                       .setField("changeSet", buildChangeSet)
                                                       .setField("result", BuildResult.SUCCESS)
-                                                      .setField("timestamp", 5)
+                                                      .setField("timestamp", 5L)
                                                       .setField("estimatedDuration", 10)
                                                       .build());
         //when
@@ -98,7 +98,7 @@ public class GetLatestJobBuildInformationTest
         //then
 
         final PublishableJob actualJob = messageBusQueue.take();
-        assertThat(actualJob, is(new PublishableJob(jobName, jobUrl, 0, revision, JenkinsFacade.JobStatus.SUCCESS, 0, 50.0, new String[0], false,
+        assertThat(actualJob, is(new PublishableJob(jobName, jobUrl, 0, revision, JenkinsFacade.JobStatus.SUCCESS, 0, 5L, 50.0, new String[0], false,
                                                     new JenkinsFacade.TestResults(1, 1, 2))));
     }
 

@@ -36,7 +36,11 @@
                 {{else}}
                 <div class="col-md-2">
                 {{/if}}
-                <div id="{{name}}" class="job build-status-{{jobStatus}}" data-title="{{name}}" data-job-status="{{jobStatus}}" data-priority="{{priority}}">
+                <div id="{{name}}"
+                     class="job build-status-{{jobStatus}}"
+                     data-title="{{name}}"
+                     data-job-status="{{jobStatus}}"
+                     data-priority="{{priority}}">
                     <div class="row">
                         <div class="col-md-12">
                             <table>
@@ -49,6 +53,7 @@
                                                 <span>Failed: {{jobsTestResults.failCount}}</span>
                                                 <span>Ignored: {{jobsTestResults.skipCount}}</span>
                                         </div>
+                                        <div data-timestamp="{{timestamp}}" class="timestamp"></div>
                                     </td>
                                     <td style="vertical-align:top;">
                                         {{#each comments}}

@@ -88,7 +88,14 @@ public class JenkinsFacade
             final String[] comments = new String[commentList.size()];
             commentList.toArray(comments);
             final TestResults testResults = getTestResults(buildDetails);
-            return Result.success(new LatestBuildInformation(revision, jobStatus, buildDetails.getNumber(), jobCompletionPercentage, comments, buildDetails.isBuilding(), testResults));
+            return Result.success(new LatestBuildInformation(revision,
+                                                             jobStatus,
+                                                             buildDetails.getNumber(),
+                                                             buildDetails.getTimestamp(),
+                                                             jobCompletionPercentage,
+                                                             comments,
+                                                             buildDetails.isBuilding(),
+                                                             testResults));
         }
         catch (final IOException e)
         {
@@ -135,16 +142,21 @@ public class JenkinsFacade
         private final String[] comments;
         private final boolean building;
         private final TestResults testResults;
+        private long timestamp;
 
         public LatestBuildInformation(final String revision,
                                       final JobStatus jobStatus,
                                       final int number,
+                                      final long timestamp,
                                       final double jobCompletionPercentage,
-                                      final String[] comments, final boolean building, final TestResults testResults)
+                                      final String[] comments,
+                                      final boolean building,
+                                      final TestResults testResults)
         {
             this.revision = revision;
             this.jobStatus = jobStatus;
             this.number = number;
+            this.timestamp = timestamp;
             this.jobCompletionPercentage = jobCompletionPercentage;
             this.comments = comments;
             this.building = building;
@@ -184,6 +196,11 @@ public class JenkinsFacade
         public TestResults getTestResults()
         {
             return testResults;
+        }
+
+        public long getTimestamp()
+        {
+            return timestamp;
         }
     }
 

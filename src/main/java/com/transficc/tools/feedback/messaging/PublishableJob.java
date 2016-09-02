@@ -27,6 +27,7 @@ public class PublishableJob
     private final String revision;
     private final JobStatus jobStatus;
     private final int buildNumber;
+    private final long timestamp;
     private final double jobCompletionPercentage;
     private final String[] comments;
     private final boolean shouldHideProgressBar;
@@ -40,6 +41,7 @@ public class PublishableJob
                           final String revision,
                           final JobStatus jobStatus,
                           final int buildNumber,
+                          final long timestamp,
                           final double jobCompletionPercentage,
                           final String[] comments,
                           final boolean building,
@@ -51,6 +53,7 @@ public class PublishableJob
         this.revision = revision;
         this.jobStatus = jobStatus;
         this.buildNumber = buildNumber;
+        this.timestamp = timestamp;
         this.jobCompletionPercentage = jobCompletionPercentage;
         this.comments = comments.clone();
         this.shouldHideProgressBar = !building;
@@ -94,6 +97,11 @@ public class PublishableJob
         return buildNumber;
     }
 
+    public long getTimestamp()
+    {
+        return timestamp;
+    }
+
     public double getJobCompletionPercentage()
     {
         return jobCompletionPercentage;
@@ -129,6 +137,7 @@ public class PublishableJob
                ", revision='" + revision + '\'' +
                ", jobStatus=" + jobStatus +
                ", buildNumber=" + buildNumber +
+               ", timestamp=" + timestamp +
                ", jobCompletionPercentage=" + jobCompletionPercentage +
                ", comments=" + Arrays.toString(comments) +
                ", shouldHideProgressBar=" + shouldHideProgressBar +
@@ -156,6 +165,10 @@ public class PublishableJob
             return false;
         }
         if (buildNumber != that.buildNumber)
+        {
+            return false;
+        }
+        if (timestamp != that.timestamp)
         {
             return false;
         }
@@ -207,6 +220,7 @@ public class PublishableJob
         result = 31 * result + (revision != null ? revision.hashCode() : 0);
         result = 31 * result + (jobStatus != null ? jobStatus.hashCode() : 0);
         result = 31 * result + buildNumber;
+        // TODO: timestamp in hashCode?
         temp = Double.doubleToLongBits(jobCompletionPercentage);
         result = 31 * result + (int)(temp ^ (temp >>> 32));
         result = 31 * result + Arrays.hashCode(comments);
