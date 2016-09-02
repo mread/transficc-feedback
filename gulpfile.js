@@ -3,10 +3,12 @@
 var gulp = require('gulp');
 var gulpBrowser = require('gulp-browser');
 var del = require('del');
+var qunit = require('gulp-qunit');
 
 var paths = {
     distFiles: 'build/resources/main/static',
-    srcFiles: 'src/main/webapp/app.js'
+    srcFiles: 'src/main/webapp/app.js',
+    testFiles: 'src/test/webapp/test-runner.html'
 };
 
 gulp.task('clean', function() {
@@ -20,6 +22,11 @@ gulp.task('browserify', ['clean'], function() {
         .pipe(gulp.dest(paths.distFiles));
 });
 
+gulp.task('test', function() {
+    return gulp
+        .src([paths.testFiles])
+        .pipe(qunit());
+});
 
-gulp.task('build', ['browserify']);
+gulp.task('build', ['browserify', 'test']);
 gulp.task('default', ['build']);

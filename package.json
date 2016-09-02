@@ -12,7 +12,8 @@
     "browserify-mustache": "0.0.4",
     "del": "2.2.0",
     "gulp": "3.9.1",
-    "gulp-browser": "2.0.1"
+    "gulp-browser": "2.0.1",
+    "gulp-qunit": "1.4.0"
   },
   "browserify": {
     "transform": [
