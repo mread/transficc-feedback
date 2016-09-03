@@ -8,7 +8,9 @@ var qunit = require('gulp-qunit');
 var paths = {
     distFiles: 'build/resources/main/static',
     srcFiles: 'src/main/webapp/app.js',
-    testFiles: 'src/test/webapp/test-runner.html'
+    testDistFiles: 'build/resources/test',
+    testSrcFiles: 'src/test/webapp/test.js',
+    testRunner: 'src/test/webapp/test-runner.html'
 };
 
 gulp.task('clean', function() {
@@ -22,9 +24,16 @@ gulp.task('browserify', ['clean'], function() {
         .pipe(gulp.dest(paths.distFiles));
 });
 
-gulp.task('test', function() {
+gulp.task('browserify-test', ['clean'], function() {
     return gulp
-        .src([paths.testFiles])
+        .src([paths.testSrcFiles])
+        .pipe(gulpBrowser.browserify())
+        .pipe(gulp.dest(paths.testDistFiles));
+});
+
+gulp.task('test', ['browserify-test'], function() {
+    return gulp
+        .src([paths.testRunner])
         .pipe(qunit());
 });
 
