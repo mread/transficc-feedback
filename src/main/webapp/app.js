@@ -220,9 +220,12 @@ $(document).ready(function() {
         }
     }
 
+    updateTimestamps();
     setupWebSocket();
     $('#set-iteration').click(setIteration);
     $('#status-update').click(updateStatus);
     onStatusUpdate($('#update .message').text());
+    $('#loading').hide();
+    $('#jobs').show();
     regulariseJobHeight();
 });

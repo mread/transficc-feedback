@@ -28,7 +28,8 @@
     </div>
 </div>
 <div class="container-fluid">
-    <div class="jobs">
+    <div id="loading" class="label label-info">Loading...</div>
+    <div id="jobs" style="display: none;">
         <div class="row">
             {{#each jobs}}
                 {{#if shouldBeFullScreen}}
