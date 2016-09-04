@@ -78,8 +78,7 @@ public class FeedbackMain
         mapper.setVisibility(PropertyAccessor.FIELD, JsonAutoDetect.Visibility.ANY);
         final SafeSerialisation safeSerialisation = new SafeSerialisation(mapper);
         final WebSocketPublisher webSocketPublisher = new WebSocketPublisher(vertx.eventBus(), safeSerialisation);
-        final JenkinsServer jenkins;
-        jenkins = createJenkinsServer(feedbackProperties);
+        final JenkinsServer jenkins = createJenkinsServer(feedbackProperties);
         final BlockingQueue<PublishableJob> messageQueue = new LinkedBlockingQueue<>();
 
         final JdbcConnectionPool dataSource = JdbcConnectionPool.create("jdbc:h2:~/data/feedback", "feedback", "");

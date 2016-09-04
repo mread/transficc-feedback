@@ -27,8 +27,12 @@ import com.offbytwo.jenkins.model.JobWithDetails;
 import com.transficc.functionality.Result;
 import com.transficc.tools.feedback.util.ClockService;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 public class JenkinsFacade
 {
+    private static final Logger LOGGER = LoggerFactory.getLogger(JenkinsFacade.class);
     private final JenkinsServer jenkins;
     private final JobPrioritiesRepository jobPrioritiesRepository;
     private final String masterJobName;
@@ -62,6 +66,7 @@ public class JenkinsFacade
         }
         catch (final IOException e)
         {
+            LOGGER.warn("Received an error trying to get jobs", e);
             return Result.error(500);
         }
     }
