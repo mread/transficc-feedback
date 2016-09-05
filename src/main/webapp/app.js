@@ -130,23 +130,6 @@ $(document).ready(function() {
             var dataPriority = $job.attr('data-priority');
             var testResults = job.jobsTestResults;
 
-            $job.replaceWith(jobTemplate({
-                            name: job.name,
-                            jobStatus: newJobStatus,
-                            priority: job.priority,
-                            revision: job.revision,
-                            url: job.url,
-                            buildNumber: job.buildNumber,
-                            jobCompletionPercentage: job.jobCompletionPercentage,
-                            shouldHideProgressBar: job.shouldHideProgressBar,
-                            comments: job.comments,
-                            shouldHideTestReport: job.shouldHideTestResults,
-                            passCount: !!testResults && testResults.passCount,
-                            failCount: !!testResults && testResults.failCount,
-                            skipCount: !!testResults && testResults.skipCount,
-                            timestamp: job.timestamp
-                        }));
-
             if (dataPriority == 0) {
                 if (currentJobStatus !== 'error' && newJobStatus === 'error') {
                     var firstJob = _.chain($('.job')).
@@ -155,8 +138,8 @@ $(document).ready(function() {
                       }).
                       head().
                       value();
-                    //After $job had replacedWith called on it, we lose the reference to the job in the DOM, so just do this for now....
-                    $('#' + job.name).parent().insertBefore($(firstJob).parent());
+
+                    $job.parent().insertBefore($(firstJob).parent());
                 } else if (currentJobStatus === 'error' && newJobStatus !== 'error') {
                     //move to alphabetical order
                     var jobToInsertBefore = _.chain($('.job')).
@@ -175,13 +158,30 @@ $(document).ready(function() {
                           }).
                           last().
                           value();
-                        $('#' + job.name).parent().insertBefore($(lastJob).parent());
+                        $job.parent().insertAfter($(lastJob).parent());
                     } else {
-                        $('#' + job.name).parent().insertBefore($(jobToInsertBefore).parent());
+                        $job.parent().insertBefore($(jobToInsertBefore).parent());
                     }
                 }
-                regulariseJobHeight();
             }
+
+            $job.replaceWith(jobTemplate({
+                name: job.name,
+                jobStatus: newJobStatus,
+                priority: job.priority,
+                revision: job.revision,
+                url: job.url,
+                buildNumber: job.buildNumber,
+                jobCompletionPercentage: job.jobCompletionPercentage,
+                shouldHideProgressBar: job.shouldHideProgressBar,
+                comments: job.comments,
+                shouldHideTestReport: job.shouldHideTestResults,
+                passCount: !!testResults && testResults.passCount,
+                failCount: !!testResults && testResults.failCount,
+                skipCount: !!testResults && testResults.skipCount,
+                timestamp: job.timestamp
+            }));
+            regulariseJobHeight();
         }
 
         var data = JSON.parse(message.data);
