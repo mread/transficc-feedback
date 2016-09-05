@@ -116,74 +116,85 @@ $(document).ready(function() {
         }, 10000);
     }
 
-    function onUpdate(message) {
-        function onJobUpdate(job) {
-            var $job = $('#' + job.name);
+    function findFirstJob() {
+        return _.chain($('.job')).
+            filter(function(job) {
+                return $(job).attr('data-priority') == 0;
+            }).
+            head().
+            value();
+    }
 
-            if ($job.length === 0) {
-                location.reload();
-                return;
-            }
+    function findLastJob() {
+        return _.chain($('.job')).
+            filter(function(job) {
+                return $(job).attr('data-priority') == 0;
+            }).
+            last().
+            value();
+    }
 
-            var currentJobStatus = $job.attr('data-job-status').toLowerCase();
-            var newJobStatus = job.jobStatus.toLowerCase();
-            var dataPriority = $job.attr('data-priority');
-            var testResults = job.jobsTestResults;
+    function findJobToInsertBefore(jobName) {
+        return _.chain($('.job')).
+            filter(function(job) {
+                return $(job).attr('data-priority') == 0 && $(job).attr('data-job-status').toLowerCase() !== 'error';
+            }).
+            find(function (job) {
+                return $(job).attr('data-title') > jobName;
+            }).
+            value();
+    }
 
-            if (dataPriority == 0) {
-                if (currentJobStatus !== 'error' && newJobStatus === 'error') {
-                    var firstJob = _.chain($('.job')).
-                      filter(function(job) {
-                        return $(job).attr('data-priority') == 0;
-                      }).
-                      head().
-                      value();
+    function onJobUpdate(job) {
+        var $job = $('#' + job.name);
 
-                    $job.parent().insertBefore($(firstJob).parent());
-                } else if (currentJobStatus === 'error' && newJobStatus !== 'error') {
-                    //move to alphabetical order
-                    var jobToInsertBefore = _.chain($('.job')).
-                      filter(function(job) {
-                        return $(job).attr('data-priority') == 0 && $(job).attr('data-job-status').toLowerCase() !== 'error';
-                      }).
-                      find(function (job) {
-                        return $(job).attr('data-title') > job.name;
-                      }).
-                      value();
-
-                    if (jobToInsertBefore === null) {
-                        var lastJob = _.chain($('.job')).
-                          filter(function(job) {
-                            return $(job).attr('data-priority') == 0;
-                          }).
-                          last().
-                          value();
-                        $job.parent().insertAfter($(lastJob).parent());
-                    } else {
-                        $job.parent().insertBefore($(jobToInsertBefore).parent());
-                    }
-                }
-            }
-
-            $job.replaceWith(jobTemplate({
-                name: job.name,
-                jobStatus: newJobStatus,
-                priority: job.priority,
-                revision: job.revision,
-                url: job.url,
-                buildNumber: job.buildNumber,
-                jobCompletionPercentage: job.jobCompletionPercentage,
-                shouldHideProgressBar: job.shouldHideProgressBar,
-                comments: job.comments,
-                shouldHideTestReport: job.shouldHideTestResults,
-                passCount: !!testResults && testResults.passCount,
-                failCount: !!testResults && testResults.failCount,
-                skipCount: !!testResults && testResults.skipCount,
-                timestamp: job.timestamp
-            }));
-            regulariseJobHeight();
+        if ($job.length === 0) {
+            location.reload();
+            return;
         }
 
+        var currentJobStatus = $job.attr('data-job-status').toLowerCase();
+        var newJobStatus = job.jobStatus.toLowerCase();
+        var dataPriority = $job.attr('data-priority');
+        var testResults = job.jobsTestResults;
+
+        if (dataPriority == 0) {
+            if (currentJobStatus !== 'error' && newJobStatus === 'error') {
+                var firstJob = findFirstJob()
+                $job.parent().insertBefore($(firstJob).parent());
+            } else if (currentJobStatus === 'error' && newJobStatus !== 'error') {
+                //move to alphabetical order
+                var jobToInsertBefore = findJobToInsertBefore(job.name);
+
+                if (jobToInsertBefore === undefined) {
+                    var lastJob = findLastJob();
+                    $job.parent().insertAfter($(lastJob).parent());
+                } else {
+                    $job.parent().insertBefore($(jobToInsertBefore).parent());
+                }
+            }
+        }
+
+        $job.replaceWith(jobTemplate({
+            name: job.name,
+            jobStatus: newJobStatus,
+            priority: job.priority,
+            revision: job.revision,
+            url: job.url,
+            buildNumber: job.buildNumber,
+            jobCompletionPercentage: job.jobCompletionPercentage,
+            shouldHideProgressBar: job.shouldHideProgressBar,
+            comments: job.comments,
+            shouldHideTestReport: job.shouldHideTestResults,
+            passCount: !!testResults && testResults.passCount,
+            failCount: !!testResults && testResults.failCount,
+            skipCount: !!testResults && testResults.skipCount,
+            timestamp: job.timestamp
+        }));
+        regulariseJobHeight();
+    }
+
+    function onUpdate(message) {
         var data = JSON.parse(message.data);
         var type = data.type;
 
