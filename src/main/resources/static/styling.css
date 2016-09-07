@@ -30,7 +30,7 @@ body, table {
     background-color: #EE2222;
 }
 
-.build-status-error a, .build-status-error test-report {
+.build-status-error a, .build-status-error .test-report {
     color: #FFF;
 }
 
