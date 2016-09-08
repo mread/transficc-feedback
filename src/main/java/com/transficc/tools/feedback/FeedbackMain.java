@@ -34,6 +34,7 @@ import com.transficc.tools.feedback.messaging.MessageSubscriber;
 import com.transficc.tools.feedback.messaging.PublishableJob;
 import com.transficc.tools.feedback.routes.Routes;
 import com.transficc.tools.feedback.routes.WebSocketPublisher;
+import com.transficc.tools.feedback.util.ClockService;
 import com.transficc.tools.feedback.util.FeedbackProperties;
 import com.transficc.tools.feedback.util.LoggingThreadFactory;
 import com.transficc.tools.feedback.util.SafeSerialisation;
@@ -77,7 +78,8 @@ public class FeedbackMain
         final ObjectMapper mapper = Json.mapper;
         mapper.setVisibility(PropertyAccessor.FIELD, JsonAutoDetect.Visibility.ANY);
         final SafeSerialisation safeSerialisation = new SafeSerialisation(mapper);
-        final WebSocketPublisher webSocketPublisher = new WebSocketPublisher(vertx.eventBus(), safeSerialisation);
+        final ClockService clockService = System::currentTimeMillis;
+        final WebSocketPublisher webSocketPublisher = new WebSocketPublisher(vertx.eventBus(), safeSerialisation, clockService);
         final JenkinsServer jenkins = createJenkinsServer(feedbackProperties);
         final BlockingQueue<PublishableJob> messageQueue = new LinkedBlockingQueue<>();
 
@@ -94,7 +96,7 @@ public class FeedbackMain
         final JobRepository jobRepository = new JobRepository();
         final MessageBus messageBus = new MessageBus(messageQueue, webSocketPublisher);
         final JenkinsFacade jenkinsFacade = new JenkinsFacade(jenkins, new JobPrioritiesRepository(feedbackProperties.getJobsWithPriorities()), feedbackProperties.getMasterJobName(),
-                                                              System::currentTimeMillis, feedbackProperties.getVersionControl());
+                                                              clockService, feedbackProperties.getVersionControl());
         final JobService jobService = new JobService(jobRepository, messageBus, jenkinsFacade, scheduledExecutorService);
         final IterationRepository iterationRepository = new IterationRepository(messageBus, new IterationDao(dataSource));
         Routes.setup(server, jobRepository, iterationRepository, new BreakingNewsService(messageBus), webSocketPublisher, Router.router(vertx));

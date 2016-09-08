@@ -19,6 +19,7 @@ import java.util.concurrent.ConcurrentLinkedDeque;
 import com.transficc.tools.feedback.messaging.PublishableIteration;
 import com.transficc.tools.feedback.messaging.PublishableJob;
 import com.transficc.tools.feedback.messaging.PublishableStatus;
+import com.transficc.tools.feedback.util.ClockService;
 import com.transficc.tools.feedback.util.SafeSerialisation;
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 
@@ -33,11 +34,13 @@ public final class WebSocketPublisher implements Handler<ServerWebSocket>
     private final Deque<String> sessions = new ConcurrentLinkedDeque<>();
     private final EventBus eventBus;
     private final SafeSerialisation safeSerialisation;
+    private final ClockService clockService;
 
-    public WebSocketPublisher(final EventBus eventBus, final SafeSerialisation safeSerialisation)
+    public WebSocketPublisher(final EventBus eventBus, final SafeSerialisation safeSerialisation, final ClockService clockService)
     {
         this.eventBus = eventBus;
         this.safeSerialisation = safeSerialisation;
+        this.clockService = clockService;
     }
 
     public void onJobUpdate(final PublishableJob job)
@@ -61,7 +64,7 @@ public final class WebSocketPublisher implements Handler<ServerWebSocket>
         final String id = socket.textHandlerID();
         sessions.addLast(id);
         socket.closeHandler(event -> sessions.remove(id));
-        socket.frameHandler(frame -> eventBus.send(id, safeSerialisation.serisalise(new Outbound("heartBeat", System.currentTimeMillis()))));
+        socket.frameHandler(frame -> eventBus.send(id, safeSerialisation.serisalise(new Outbound("heartBeat", clockService.currentTimeMillis()))));
     }
 
     private void broadcastMessage(final String type, final Object content)
