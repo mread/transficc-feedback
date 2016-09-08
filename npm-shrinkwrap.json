@@ -2,16 +2,6 @@
   "name": "feedback",
   "version": "0.0.1",
   "dependencies": {
-    "jquery": {
-      "version": "2.2.0",
-      "from": "jquery@2.2.0",
-      "resolved": "https://registry.npmjs.org/jquery/-/jquery-2.2.0.tgz"
-    },
-    "lodash": {
-      "version": "4.3.0",
-      "from": "lodash@4.3.0",
-      "resolved": "https://registry.npmjs.org/lodash/-/lodash-4.3.0.tgz"
-    },
     "hogan.js": {
       "version": "3.0.2",
       "from": "hogan.js@*",
@@ -23,9 +13,9 @@
           "resolved": "https://registry.npmjs.org/nopt/-/nopt-1.0.10.tgz",
           "dependencies": {
             "abbrev": {
-              "version": "1.0.7",
-              "from": "abbrev@1",
-              "resolved": "https://registry.npmjs.org/abbrev/-/abbrev-1.0.7.tgz"
+              "version": "1.0.9",
+              "from": "abbrev@>=1.0.0 <2.0.0",
+              "resolved": "https://registry.npmjs.org/abbrev/-/abbrev-1.0.9.tgz"
             }
           }
         },
@@ -35,6 +25,21 @@
           "resolved": "https://registry.npmjs.org/mkdirp/-/mkdirp-0.3.0.tgz"
         }
       }
+    },
+    "jquery": {
+      "version": "2.2.0",
+      "from": "jquery@2.2.0",
+      "resolved": "https://registry.npmjs.org/jquery/-/jquery-2.2.0.tgz"
+    },
+    "lodash": {
+      "version": "4.3.0",
+      "from": "lodash@4.3.0",
+      "resolved": "https://registry.npmjs.org/lodash/-/lodash-4.3.0.tgz"
+    },
+    "moment": {
+      "version": "2.14.1",
+      "from": "moment@2.14.1",
+      "resolved": "https://registry.npmjs.org/moment/-/moment-2.14.1.tgz"
     }
   }
 }
