@@ -150,7 +150,7 @@ $(document).ready(function() {
         }, 10000);
     }
 
-    function handleUpdateForOrdinaryJob($job, newJobStatus) {
+    function handleUpdateForOrdinaryJob($job, jobName, newJobStatus) {
         var currentJobStatus = $job.attr('data-job-status').toLowerCase();
         var dataPriority = $job.attr('data-priority');
 
@@ -160,7 +160,7 @@ $(document).ready(function() {
                 $job.parent().insertBefore($(firstJob).parent());
             } else if (currentJobStatus === 'error' && newJobStatus !== 'error') {
                 //move to alphabetical order
-                var jobToInsertBefore = Jobs.findJobToFollow(job.name);
+                var jobToInsertBefore = Jobs.findJobToFollow(jobName);
 
                 if (jobToInsertBefore === undefined) {
                     var lastJob = Jobs.findLast();
@@ -183,7 +183,7 @@ $(document).ready(function() {
         var newJobStatus = job.jobStatus.toLowerCase();
         var testResults = job.jobsTestResults;
 
-        handleUpdateForOrdinaryJob($job, newJobStatus);
+        handleUpdateForOrdinaryJob($job, job.name, newJobStatus);
 
         $job.replaceWith(jobTemplate({
             name: job.name,
