@@ -13,7 +13,9 @@
 body, table {
     font-size: 16px;
     font-family: monospace;
+    color: #000000;
 }
+
 .job a {
     color: #000000;
 }
@@ -22,16 +24,12 @@ body, table {
     background-color: #33cc33;
 }
 
-.build-status-success a {
-    color: #000000;
-}
-
 .build-status-error {
     background-color: #EE2222;
 }
 
-.build-status-error a, .build-status-error .test-report {
-    color: #FFF;
+.build-status-error *, .build-status-error a {
+    color: #FFFFFF;
 }
 
 .build-status-disabled {
@@ -48,13 +46,12 @@ body, table {
 }
 
 .job {
-    color: #000000;
     padding: 5px;
     margin: 2px;
     border-radius: 5px;
 }
 
-.test-report {
+.test-report, .timestamp {
     font-size: 9px;
 }
 
