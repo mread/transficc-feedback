@@ -112,9 +112,13 @@ $(document).ready(function() {
         }
     }
 
+    function getJobTimeDifference(jobTime) {
+        return moment(jobTime).fromNow();
+    }
+
     function updateTimestamps() {
         $('.timestamp').each(function() {
-            $(this).text(moment($(this).data('timestamp')).fromNow());
+            $(this).text(getJobTimeDifference($(this).data('timestamp')));
         });
     }
 
@@ -195,7 +199,8 @@ $(document).ready(function() {
             passCount: !!testResults && testResults.passCount,
             failCount: !!testResults && testResults.failCount,
             skipCount: !!testResults && testResults.skipCount,
-            timestamp: job.timestamp
+            timestamp: job.timestamp,
+            timeDifference: getJobTimeDifference(job.timestamp)
         }));
         regulariseJobHeight();
     }
