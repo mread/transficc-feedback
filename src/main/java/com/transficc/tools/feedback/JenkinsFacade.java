@@ -94,7 +94,7 @@ public class JenkinsFacade
                         .getChangeSet()
                         .getItems()
                         .stream()
-                        .map(BuildChangeSetItem::getComment)
+                        .map(item -> item.getAuthor().getFullName() + " " + item.getComment())
                         .collect(Collectors.toList());
                 final String[] comments = new String[commentList.size()];
                 commentList.toArray(comments);
