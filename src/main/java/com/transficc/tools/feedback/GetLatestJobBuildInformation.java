@@ -24,7 +24,6 @@ public class GetLatestJobBuildInformation implements Runnable
     private static final Logger LOGGER = LoggerFactory.getLogger(GetLatestJobBuildInformation.class);
     private final Job job;
     private final MessageBus messageBus;
-    private final String jobUrl;
     private final JenkinsFacade jenkinsFacade;
     private final JobService jobService;
 
@@ -35,7 +34,6 @@ public class GetLatestJobBuildInformation implements Runnable
         this.jenkinsFacade = jenkinsFacade;
         this.jobService = jobService;
         this.job = job;
-        this.jobUrl = this.job.getUrl() + "/api/json?tree=name,url,color,lastBuild[number,url]";
     }
 
     @Override
