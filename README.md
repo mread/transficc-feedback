@@ -52,6 +52,7 @@ http://localhost:4567
 - Fix the never ending green (boxes keep growing in height - apparently only in Chromium)
 - Provide a history of failing/intermittent tests
 - Support HTTPS (required for websocket to work in some corporate infrastructures)
+- Send message to UI if job is deleted or renamed
 
 License
 ----
