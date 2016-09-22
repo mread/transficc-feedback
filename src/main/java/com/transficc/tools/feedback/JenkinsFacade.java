@@ -76,31 +76,38 @@ public class JenkinsFacade
         try
         {
             final JobWithDetails job = jenkins.getJob(jobName);
-            if (job == null || job.getLastBuild().equals(Build.BUILD_HAS_NEVER_RAN))
+            if (job == null)
+            {
+                return Result.error(404);
+            }
+            else if (job.getLastBuild().equals(Build.BUILD_HAS_NEVER_RAN))
             {
                 return Result.error(400);
             }
-            final BuildWithDetails buildDetails = job.getLastBuild().details();
-            final String revision = getRevision(buildDetails);
-            final JobStatus jobStatus = !job.isBuildable() ? JobStatus.DISABLED : JobStatus.parse(buildDetails.getResult(), previousJobStatus);
-            final double jobCompletionPercentage = (double)(clockService.currentTimeMillis() - buildDetails.getTimestamp()) / buildDetails.getEstimatedDuration() * 100;
-            final List<String> commentList = buildDetails
-                    .getChangeSet()
-                    .getItems()
-                    .stream()
-                    .map(BuildChangeSetItem::getComment)
-                    .collect(Collectors.toList());
-            final String[] comments = new String[commentList.size()];
-            commentList.toArray(comments);
-            final TestResults testResults = getTestResults(buildDetails);
-            return Result.success(new LatestBuildInformation(revision,
-                                                             jobStatus,
-                                                             buildDetails.getNumber(),
-                                                             buildDetails.getTimestamp(),
-                                                             jobCompletionPercentage,
-                                                             comments,
-                                                             buildDetails.isBuilding(),
-                                                             testResults));
+            else
+            {
+                final BuildWithDetails buildDetails = job.getLastBuild().details();
+                final String revision = getRevision(buildDetails);
+                final JobStatus jobStatus = !job.isBuildable() ? JobStatus.DISABLED : JobStatus.parse(buildDetails.getResult(), previousJobStatus);
+                final double jobCompletionPercentage = (double)(clockService.currentTimeMillis() - buildDetails.getTimestamp()) / buildDetails.getEstimatedDuration() * 100;
+                final List<String> commentList = buildDetails
+                        .getChangeSet()
+                        .getItems()
+                        .stream()
+                        .map(BuildChangeSetItem::getComment)
+                        .collect(Collectors.toList());
+                final String[] comments = new String[commentList.size()];
+                commentList.toArray(comments);
+                final TestResults testResults = getTestResults(buildDetails);
+                return Result.success(new LatestBuildInformation(revision,
+                                                                 jobStatus,
+                                                                 buildDetails.getNumber(),
+                                                                 buildDetails.getTimestamp(),
+                                                                 jobCompletionPercentage,
+                                                                 comments,
+                                                                 buildDetails.isBuilding(),
+                                                                 testResults));
+            }
         }
         catch (final IOException e)
         {

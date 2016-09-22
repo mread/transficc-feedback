@@ -18,7 +18,6 @@ import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
-import com.transficc.tools.feedback.messaging.JobError;
 import com.transficc.tools.feedback.messaging.MessageBus;
 
 public class JobService
@@ -39,21 +38,16 @@ public class JobService
         this.scheduledExecutorService = scheduledExecutorService;
     }
 
-    public void onError(final JobError jobError, final String jobName)
+    public void onJobNotFound(final String jobName)
     {
-        switch (jobError)
+        final ScheduledFuture future = jobNameToScheduledRunnable.remove(jobName);
+        if (future != null)
         {
-            case NOT_FOUND:
-                final ScheduledFuture future = jobNameToScheduledRunnable.remove(jobName);
-                if (future != null)
-                {
-                    future.cancel(true);
-                }
-                jobRepository.remove(jobName);
-                break;
-            default:
-                throw new IllegalArgumentException("Unhandled error: " + jobError);
+            future.cancel(true);
         }
+        jobRepository.remove(jobName);
+
+
     }
 
     public void add(final Job job)

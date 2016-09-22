@@ -13,7 +13,6 @@
 package com.transficc.tools.feedback;
 
 import com.transficc.functionality.Result;
-import com.transficc.tools.feedback.messaging.JobError;
 import com.transficc.tools.feedback.messaging.MessageBus;
 
 import org.slf4j.Logger;
@@ -46,7 +45,7 @@ public class GetLatestJobBuildInformation implements Runnable
                                            {
                                                if (statusCode == 404)
                                                {
-                                                   jobService.onError(JobError.NOT_FOUND, job.getName());
+                                                   jobService.onJobNotFound(job.getName());
                                                }
                                                else
                                                {

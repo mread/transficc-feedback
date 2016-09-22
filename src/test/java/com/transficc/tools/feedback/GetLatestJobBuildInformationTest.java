@@ -12,6 +12,7 @@
  */
 package com.transficc.tools.feedback;
 
+import java.io.IOException;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
@@ -37,6 +38,8 @@ import org.mockito.MockitoAnnotations;
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertThat;
 import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyZeroInteractions;
 
 public class GetLatestJobBuildInformationTest
 {
@@ -47,6 +50,9 @@ public class GetLatestJobBuildInformationTest
     private JobWithDetails jobWithDetails;
     @Mock
     private Build lastBuild;
+    @Mock
+    private JobService jobService;
+
     private GetLatestJobBuildInformation jobChecker;
     private BlockingQueue<PublishableJob> messageBusQueue;
     private String jobName;
@@ -59,7 +65,7 @@ public class GetLatestJobBuildInformationTest
         jobName = "Tom is the best";
         given(jobWithDetails.isBuildable()).willReturn(true);
         final MessageBus messageBus = new MessageBus(messageBusQueue, null);
-        this.jobChecker = new GetLatestJobBuildInformation(messageBus, null, new Job(jobName, "tom-url", 0, JenkinsFacade.JobStatus.SUCCESS, false, VersionControl.GIT),
+        this.jobChecker = new GetLatestJobBuildInformation(messageBus, jobService, new Job(jobName, "tom-url", 0, JenkinsFacade.JobStatus.SUCCESS, false, VersionControl.GIT),
                                                            new JenkinsFacade(jenkins, null, null, () -> 10, VersionControl.GIT));
     }
 
@@ -100,6 +106,7 @@ public class GetLatestJobBuildInformationTest
         final PublishableJob actualJob = messageBusQueue.take();
         assertThat(actualJob, is(new PublishableJob(jobName, jobUrl, 0, revision, JenkinsFacade.JobStatus.SUCCESS, 0, 5L, 50.0, new String[0], false,
                                                     new JenkinsFacade.TestResults(1, 1, 2))));
+        verifyZeroInteractions(jobService);
     }
 
     @Test
@@ -133,5 +140,28 @@ public class GetLatestJobBuildInformationTest
         //then
 
         assertThat(messageBusQueue.size(), is(0));
+        verifyZeroInteractions(jobService);
+    }
+
+    @Test
+    public void shouldRemoveJobIfNotFoundOnJenkinsServer() throws IOException
+    {
+        given(jenkins.getJob(jobName)).willReturn(null);
+
+        jobChecker.run();
+
+        verify(jobService).onJobNotFound(jobName);
+    }
+
+    @Test
+    public void shouldDoNothingIfJobDoesNotHaveABuild() throws IOException
+    {
+        given(jenkins.getJob(jobName)).willReturn(jobWithDetails);
+        given(jobWithDetails.getLastBuild()).willReturn(Build.BUILD_HAS_NEVER_RAN);
+
+        jobChecker.run();
+
+        assertThat(messageBusQueue.size(), is(0));
+        verifyZeroInteractions(jobService);
     }
 }
