@@ -6,6 +6,8 @@ import java.io.UncheckedIOException;
 
 import javax.sql.DataSource;
 
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
+
 import org.flywaydb.core.Flyway;
 import org.h2.jdbcx.JdbcConnectionPool;
 import org.junit.After;
@@ -50,6 +52,7 @@ public abstract class DaoTest
         transactionStatus = transactionManager.getTransaction(transactionDefinition);
     }
 
+    @SuppressFBWarnings("RV_RETURN_VALUE_IGNORED_BAD_PRACTICE")
     @After
     public void cleanup()
     {
