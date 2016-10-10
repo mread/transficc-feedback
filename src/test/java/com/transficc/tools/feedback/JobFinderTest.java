@@ -31,7 +31,8 @@ import org.hamcrest.core.Is;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.BDDMockito;
-import org.mockito.Matchers;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyLong;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
@@ -54,7 +55,7 @@ public class JobFinderTest
     public void setup()
     {
         MockitoAnnotations.initMocks(this);
-        BDDMockito.given(scheduledExecutorService.scheduleAtFixedRate(Matchers.any(Runnable.class), Matchers.anyLong(), Matchers.anyLong(), Matchers.any(TimeUnit.class))).willReturn(scheduledFuture);
+        BDDMockito.given(scheduledExecutorService.scheduleAtFixedRate(any(Runnable.class), anyLong(), anyLong(), any(TimeUnit.class))).willReturn(scheduledFuture);
         jobRepository = new JobRepository();
         final LinkedBlockingQueue<PublishableJob> messageBusQueue = new LinkedBlockingQueue<>();
         final MessageBus messageBus = new MessageBus(messageBusQueue,
