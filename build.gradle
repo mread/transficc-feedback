@@ -68,7 +68,7 @@ def defineLocalLibs()
     Map libs = [
             'vertx'               : ["io.vertx:vertx-web:$vertxVersion", "io.vertx:vertx-auth-common:$vertxVersion", "io.vertx:vertx-core:$vertxVersion", "io.vertx:vertx-web-templ-handlebars:$vertxVersion"],
             'jackson'             : ['com.fasterxml.jackson.core:jackson-core:2.7.4', 'com.fasterxml.jackson.core:jackson-databind:2.7.4', 'com.fasterxml.jackson.core:jackson-annotations:2.7.4'],
-            'logging'             : ['org.slf4j:slf4j-api:1.7.21', 'org.apache.logging.log4j:log4j-api:2.5', 'org.apache.logging.log4j:log4j-core:2.5', 'org.apache.logging.log4j:log4j-slf4j-impl:2.5'],
+            'slf4j-api'             : 'org.slf4j:slf4j-api:1.7.21',
             'commons-codec'       : 'commons-codec:commons-codec:1.9',
             'commons-logging'     : 'commons-logging:commons-logging:1.2',
             'findbugs-annotations': 'com.google.code.findbugs:annotations:3.0.1',
@@ -119,7 +119,7 @@ dependencies {
     compile libs.'jackson'
     compile libs.'jenkins-client'
     compile libs.'jcip-annotations'
-    compile libs.'logging'
+    compile libs.'slf4j-api'
     compile libs.'netty'
     compile libs.'spring-jdbc'
     compile libs.'spring-beans'

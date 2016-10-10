@@ -39,16 +39,6 @@ import com.transficc.tools.feedback.util.FeedbackProperties;
 import com.transficc.tools.feedback.util.LoggingThreadFactory;
 import com.transficc.tools.feedback.util.SafeSerialisation;
 
-import org.apache.logging.log4j.Level;
-import org.apache.logging.log4j.core.Filter;
-import org.apache.logging.log4j.core.appender.ConsoleAppender;
-import org.apache.logging.log4j.core.config.Configurator;
-import org.apache.logging.log4j.core.config.builder.api.AppenderComponentBuilder;
-import org.apache.logging.log4j.core.config.builder.api.ConfigurationBuilder;
-import org.apache.logging.log4j.core.config.builder.api.ConfigurationBuilderFactory;
-import org.apache.logging.log4j.core.config.builder.api.FilterComponentBuilder;
-import org.apache.logging.log4j.core.config.builder.api.LayoutComponentBuilder;
-import org.apache.logging.log4j.core.config.builder.impl.BuiltConfiguration;
 import org.flywaydb.core.Flyway;
 import org.h2.jdbcx.JdbcConnectionPool;
 
@@ -60,13 +50,7 @@ import io.vertx.ext.web.Router;
 
 public class FeedbackMain
 {
-
     private static final String SERVICE_NAME = "transficc-feedback";
-
-    static
-    {
-        configureLogging(SERVICE_NAME);
-    }
 
     public static void main(final String[] args) throws IOException
     {
@@ -120,32 +104,4 @@ public class FeedbackMain
         return jenkins;
     }
 
-    private static void configureLogging(final String serviceName)
-    {
-        System.setProperty("vertx.logger-delegate-factory-class-name", "io.vertx.core.logging.SLF4JLogDelegateFactory");
-
-        final ConfigurationBuilder<BuiltConfiguration> builder = ConfigurationBuilderFactory.newConfigurationBuilder();
-        //Set Log4js own log level
-        builder.setStatusLevel(Level.ERROR);
-        builder.setConfigurationName("TransFICC default service log configuration");
-
-        final String stdOutAppender = "stdoutAppender";
-        final LayoutComponentBuilder patternLayout = builder.newLayout("PatternLayout").addAttribute("pattern", "%d %c{1} [%t] %-5level: %msg%n%throwable");
-        //only log fatal or worse to the console
-        final FilterComponentBuilder filterComponent = builder.newFilter("ThresholdFilter", Filter.Result.NEUTRAL, Filter.Result.DENY).addAttribute("level", Level.FATAL);
-        final String logPath = "log/";
-
-        final AppenderComponentBuilder consoleAppender = builder.newAppender(stdOutAppender, "CONSOLE").add(filterComponent).
-                add(patternLayout).addAttribute("target", ConsoleAppender.Target.SYSTEM_OUT);
-        final AppenderComponentBuilder fileAppender = builder.newAppender("fileAppender", "RollingFile").add(patternLayout).
-                addAttribute("fileName", new File(logPath + serviceName + ".log").getAbsolutePath()).addAttribute("filePattern", logPath + serviceName + ".%i.log").
-                addComponent(builder.newComponent("SizeBasedTriggeringPolicy").addAttribute("size", "20 MB"));
-
-        builder.add(consoleAppender);
-        builder.add(fileAppender);
-
-        builder.add(builder.newLogger("com.transficc", Level.INFO).addAttribute("additivity", false).add(builder.newAppenderRef(stdOutAppender)).add(builder.newAppenderRef("fileAppender")));
-        builder.add(builder.newRootLogger(Level.INFO).add(builder.newAppenderRef(stdOutAppender)).add(builder.newAppenderRef("fileAppender")));
-        Configurator.initialize(builder.build());
-    }
 }
