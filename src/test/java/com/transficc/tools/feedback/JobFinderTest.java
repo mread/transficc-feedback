@@ -31,17 +31,17 @@ import org.hamcrest.core.Is;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.BDDMockito;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyLong;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyLong;
 
 
 import static com.transficc.tools.feedback.JenkinsFacade.JobStatus;
 
 public class JobFinderTest
 {
-    private static final String URL = "blah";
     @Mock
     private JenkinsServer jenkins;
     @Mock
@@ -51,6 +51,7 @@ public class JobFinderTest
     private JobFinder jobFinder;
     private JobRepository jobRepository;
 
+    @SuppressWarnings("unchecked")
     @Before
     public void setup()
     {
@@ -91,6 +92,7 @@ public class JobFinderTest
     }
 
     @Test
+    @SuppressWarnings("unchecked")
     public void shouldAddJobAsTheyAreCreated() throws IOException
     {
         final Map<String, com.offbytwo.jenkins.model.Job> result1 = new HashMap<>();

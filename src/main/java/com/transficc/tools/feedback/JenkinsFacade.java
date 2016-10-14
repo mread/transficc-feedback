@@ -115,6 +115,7 @@ public class JenkinsFacade
         }
     }
 
+    @SuppressWarnings("unchecked")
     private static String getRevision(final BuildWithDetails buildDetails)
     {
         for (final Object entries : buildDetails.getActions())
@@ -128,6 +129,7 @@ public class JenkinsFacade
         return "";
     }
 
+    @SuppressWarnings("unchecked")
     private static TestResults getTestResults(final BuildWithDetails buildDetails)
     {
         for (final Object entries : buildDetails.getActions())
