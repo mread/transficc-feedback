@@ -124,6 +124,9 @@ $(document).ready(function() {
 
     function onOpen() {
         if (heartBeatInterval === null) {
+            if ($('#disconnected').is(':visible')) {
+                location.reload();
+            }
             missedHeartBeats = 0;
             $('#disconnected').hide();
             heartBeatInterval = setInterval(function() {
