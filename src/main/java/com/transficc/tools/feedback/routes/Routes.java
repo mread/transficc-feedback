@@ -36,12 +36,12 @@ public final class Routes
                              final IterationRepository iterationRepository,
                              final BreakingNewsService breakingNewsService,
                              final WebSocketPublisher webSocketPublisher,
-                             final Router router)
+                             final Router router, final long startUpTime)
     {
         final TemplateEngine engine = HandlebarsTemplateEngine.create();
         router.route().handler(BodyHandler.create());
         router.route("/static/*").handler(StaticHandler.create().setWebRoot("static").setCachingEnabled(true));
-        router.get("/").handler(new IndexViewRoute(engine, jobRepository, iterationRepository, breakingNewsService));
+        router.get("/").handler(new IndexViewRoute(engine, jobRepository, iterationRepository, breakingNewsService, startUpTime));
 
         router.put("/iteration").handler(RouteHandlerFactory.requestWithPayload(UpdateIterationRoute.IterationUpdate.class, new UpdateIterationRoute(iterationRepository)));
         router.put("/status").handler(RouteHandlerFactory.requestWithPayload(UpdateStatusRoute.StatusUpdate.class, new UpdateStatusRoute(breakingNewsService)));

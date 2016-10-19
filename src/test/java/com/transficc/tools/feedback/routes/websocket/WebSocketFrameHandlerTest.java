@@ -25,11 +25,12 @@ public class WebSocketFrameHandlerTest
 {
     private static final String SESSION_ID = "Session543543";
     private static final int CLOCK_TIME = 23432;
+    private static final int START_UP_TIME = 34543;
     private final EventBus eventBus = Mockito.mock(EventBus.class);
     private final ObjectMapper objectMapper = new ObjectMapper();
     private final SafeSerialisation safeSerialisation = new SafeSerialisation(objectMapper);
     private final JobRepository jobRepository = new JobRepository();
-    private final WebSocketFrameHandler handler = new WebSocketFrameHandler(SESSION_ID, eventBus, safeSerialisation, () -> CLOCK_TIME, jobRepository);
+    private final WebSocketFrameHandler handler = new WebSocketFrameHandler(SESSION_ID, eventBus, safeSerialisation, () -> CLOCK_TIME, jobRepository, START_UP_TIME);
 
     @Before
     public void setUp() throws Exception
@@ -47,7 +48,7 @@ public class WebSocketFrameHandlerTest
         handler.handle(frame);
 
         //then
-        verify(eventBus).send(SESSION_ID, safeSerialisation.serisalise(OutboundWebSocketFrame.heartbeat(CLOCK_TIME)));
+        verify(eventBus).send(SESSION_ID, safeSerialisation.serisalise(OutboundWebSocketFrame.heartbeat(new HeartbeatMessage(CLOCK_TIME, START_UP_TIME))));
     }
 
     @Test

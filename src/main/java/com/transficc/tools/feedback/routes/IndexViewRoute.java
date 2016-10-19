@@ -30,14 +30,16 @@ public class IndexViewRoute implements Handler<RoutingContext>
     private final JobStatusSnapshot jobStatusSnapshot;
     private final IterationRepository iterationRepository;
     private final BreakingNewsService breakingNewsService;
+    private final long startUpTime;
 
     public IndexViewRoute(final TemplateEngine engine, final JobStatusSnapshot jobStatusSnapshot,
-                          final IterationRepository iterationRepository, final BreakingNewsService breakingNewsService)
+                          final IterationRepository iterationRepository, final BreakingNewsService breakingNewsService, final long startUpTime)
     {
         this.engine = engine;
         this.jobStatusSnapshot = jobStatusSnapshot;
         this.iterationRepository = iterationRepository;
         this.breakingNewsService = breakingNewsService;
+        this.startUpTime = startUpTime;
     }
 
     @Override
@@ -47,6 +49,7 @@ public class IndexViewRoute implements Handler<RoutingContext>
         routingContext.put("jobs", jobs);
         routingContext.put("iteration", iterationRepository.iteration());
         routingContext.put("status", breakingNewsService.status());
+        routingContext.put("startUpTime", startUpTime);
         engine.render(routingContext, TEMPLATE,
                       res ->
                       {

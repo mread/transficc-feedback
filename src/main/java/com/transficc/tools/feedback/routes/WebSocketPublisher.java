@@ -37,13 +37,15 @@ public final class WebSocketPublisher implements Handler<ServerWebSocket>
     private final SafeSerialisation safeSerialisation;
     private final ClockService clockService;
     private final JobStatusSnapshot jobStatusSnapshot;
+    private final long startUpTime;
 
-    public WebSocketPublisher(final EventBus eventBus, final SafeSerialisation safeSerialisation, final ClockService clockService, final JobStatusSnapshot jobStatusSnapshot)
+    public WebSocketPublisher(final EventBus eventBus, final SafeSerialisation safeSerialisation, final ClockService clockService, final JobStatusSnapshot jobStatusSnapshot, final long startUpTime)
     {
         this.eventBus = eventBus;
         this.safeSerialisation = safeSerialisation;
         this.clockService = clockService;
         this.jobStatusSnapshot = jobStatusSnapshot;
+        this.startUpTime = startUpTime;
     }
 
     public void onJobUpdate(final PublishableJob job)
@@ -67,7 +69,7 @@ public final class WebSocketPublisher implements Handler<ServerWebSocket>
         final String id = socket.textHandlerID();
         sessions.addLast(id);
         socket.closeHandler(event -> sessions.remove(id));
-        socket.frameHandler(new WebSocketFrameHandler(id, eventBus, safeSerialisation, clockService, jobStatusSnapshot));
+        socket.frameHandler(new WebSocketFrameHandler(id, eventBus, safeSerialisation, clockService, jobStatusSnapshot, startUpTime));
     }
 
     private void broadcastMessage(final OutboundWebSocketFrame outboundWebSocketFrame)

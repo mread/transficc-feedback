@@ -17,14 +17,21 @@ public class WebSocketFrameHandler implements Handler<WebSocketFrame>
     private final SafeSerialisation safeSerialisation;
     private final ClockService clockService;
     private final JobStatusSnapshot jobStatusSnapshot;
+    private final long startUpTime;
 
-    public WebSocketFrameHandler(final String sessionId, final EventBus eventBus, final SafeSerialisation safeSerialisation, final ClockService clockService, final JobStatusSnapshot jobStatusSnapshot)
+    public WebSocketFrameHandler(final String sessionId,
+                                 final EventBus eventBus,
+                                 final SafeSerialisation safeSerialisation,
+                                 final ClockService clockService,
+                                 final JobStatusSnapshot jobStatusSnapshot,
+                                 final long startUpTime)
     {
         this.sessionId = sessionId;
         this.eventBus = eventBus;
         this.safeSerialisation = safeSerialisation;
         this.clockService = clockService;
         this.jobStatusSnapshot = jobStatusSnapshot;
+        this.startUpTime = startUpTime;
     }
 
     @Override
@@ -33,7 +40,7 @@ public class WebSocketFrameHandler implements Handler<WebSocketFrame>
         final String payload = frame.textData();
         if ("--heartbeat--".equals(payload))
         {
-            eventBus.send(sessionId, safeSerialisation.serisalise(OutboundWebSocketFrame.heartbeat(clockService.currentTimeMillis())));
+            eventBus.send(sessionId, safeSerialisation.serisalise(OutboundWebSocketFrame.heartbeat(new HeartbeatMessage(clockService.currentTimeMillis(), startUpTime))));
         }
         else if ("snapshot".equals(payload))
         {

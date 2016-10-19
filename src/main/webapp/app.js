@@ -18,6 +18,8 @@ window.$ = window.jQuery = $;
 var heartBeatInterval = null;
 var webSocket;
 var missedHeartBeats = 0;
+var startUpTime;
+
 var Jobs = {
     findFirst: function () {
         return _.chain($('.job')).
@@ -219,6 +221,10 @@ $(document).ready(function() {
         } else if (type === 'iterationUpdate') {
             $('#iteration').html(data.value.iteration);
         } else if (type === 'heartBeat') {
+            if (data.value.serverStartUpTime !== startUpTime) {
+                console.log('Server update detected. Reloading client');
+                location.reload();
+            }
             missedHeartBeats = 0;
             updateTimestamps();
         }
@@ -244,6 +250,7 @@ $(document).ready(function() {
         }
     }
 
+    startUpTime = $('#start-up-time').data('value');
     updateTimestamps();
     setupWebSocket();
     $('#set-iteration').click(setIteration);

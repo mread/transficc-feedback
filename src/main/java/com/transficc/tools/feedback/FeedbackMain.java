@@ -64,7 +64,8 @@ public class FeedbackMain
         final SafeSerialisation safeSerialisation = new SafeSerialisation(mapper);
         final ClockService clockService = System::currentTimeMillis;
         final JobRepository jobRepository = new JobRepository();
-        final WebSocketPublisher webSocketPublisher = new WebSocketPublisher(vertx.eventBus(), safeSerialisation, clockService, jobRepository);
+        final long startUpTime = clockService.currentTimeMillis();
+        final WebSocketPublisher webSocketPublisher = new WebSocketPublisher(vertx.eventBus(), safeSerialisation, clockService, jobRepository, startUpTime);
         final JenkinsServer jenkins = createJenkinsServer(feedbackProperties);
         final BlockingQueue<PublishableJob> jobUpdateQueue = new LinkedBlockingQueue<>();
 
@@ -83,7 +84,7 @@ public class FeedbackMain
                                                               clockService, feedbackProperties.getVersionControl());
         final JobService jobService = new JobService(jobRepository, messageBus, jenkinsFacade, scheduledExecutorService);
         final IterationRepository iterationRepository = new IterationRepository(messageBus, new IterationDao(dataSource));
-        Routes.setup(server, jobRepository, iterationRepository, new BreakingNewsService(messageBus), webSocketPublisher, Router.router(vertx));
+        Routes.setup(server, jobRepository, iterationRepository, new BreakingNewsService(messageBus), webSocketPublisher, Router.router(vertx), startUpTime);
         final JobFinder jobFinder = new JobFinder(jobService, jenkinsFacade);
 
         scheduledExecutorService.scheduleAtFixedRate(jobFinder, 0, 5, TimeUnit.MINUTES);

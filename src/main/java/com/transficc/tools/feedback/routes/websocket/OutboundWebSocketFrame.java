@@ -32,8 +32,8 @@ public final class OutboundWebSocketFrame
         return new OutboundWebSocketFrame("iterationUpdate", iteration);
     }
 
-    public static OutboundWebSocketFrame heartbeat(final long timestamp)
+    public static OutboundWebSocketFrame heartbeat(final HeartbeatMessage heartbeatMessage)
     {
-        return new OutboundWebSocketFrame("heartBeat", timestamp);
+        return new OutboundWebSocketFrame("heartBeat", heartbeatMessage);
     }
 }
