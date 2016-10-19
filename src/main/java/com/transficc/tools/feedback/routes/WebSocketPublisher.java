@@ -48,17 +48,17 @@ public final class WebSocketPublisher implements Handler<ServerWebSocket>
 
     public void onJobUpdate(final PublishableJob job)
     {
-        broadcastMessage("jobUpdate", job);
+        broadcastMessage(OutboundWebSocketFrame.jobUpdate(job));
     }
 
     public void onStatusUpdate(final PublishableStatus statusUpdate)
     {
-        broadcastMessage("statusUpdate", statusUpdate);
+        broadcastMessage(OutboundWebSocketFrame.statusUpdate(statusUpdate));
     }
 
     public void onIterationUpdate(final PublishableIteration iterationUpdate)
     {
-        broadcastMessage("iterationUpdate", iterationUpdate);
+        broadcastMessage(OutboundWebSocketFrame.iterationUpdate(iterationUpdate));
     }
 
     @Override
@@ -70,10 +70,10 @@ public final class WebSocketPublisher implements Handler<ServerWebSocket>
         socket.frameHandler(new WebSocketFrameHandler(id, eventBus, safeSerialisation, clockService, jobStatusSnapshot));
     }
 
-    private void broadcastMessage(final String type, final Object content)
+    private void broadcastMessage(final OutboundWebSocketFrame outboundWebSocketFrame)
     {
         final Iterator<String> iterator = sessions.iterator();
-        final String outbound = safeSerialisation.serisalise(new OutboundWebSocketFrame(type, content));
+        final String outbound = safeSerialisation.serisalise(outboundWebSocketFrame);
         while (iterator.hasNext())
         {
             eventBus.send(iterator.next(), outbound);

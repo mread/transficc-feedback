@@ -33,13 +33,13 @@ public class WebSocketFrameHandler implements Handler<WebSocketFrame>
         final String payload = frame.textData();
         if ("--heartbeat--".equals(payload))
         {
-            eventBus.send(sessionId, safeSerialisation.serisalise(new OutboundWebSocketFrame("heartBeat", clockService.currentTimeMillis())));
+            eventBus.send(sessionId, safeSerialisation.serisalise(OutboundWebSocketFrame.heartbeat(clockService.currentTimeMillis())));
         }
         else if ("snapshot".equals(payload))
         {
             for (final PublishableJob job : jobStatusSnapshot.getPublishableJobs())
             {
-                eventBus.send(sessionId, safeSerialisation.serisalise(new OutboundWebSocketFrame("jobUpdate", job)));
+                eventBus.send(sessionId, safeSerialisation.serisalise(OutboundWebSocketFrame.jobUpdate(job)));
             }
         }
     }

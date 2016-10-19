@@ -14,7 +14,6 @@ import org.junit.Test;
 import org.mockito.InOrder;
 import org.mockito.Mockito;
 
-
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyZeroInteractions;
 
@@ -48,7 +47,7 @@ public class WebSocketFrameHandlerTest
         handler.handle(frame);
 
         //then
-        verify(eventBus).send(SESSION_ID, safeSerialisation.serisalise(new OutboundWebSocketFrame("heartBeat", CLOCK_TIME)));
+        verify(eventBus).send(SESSION_ID, safeSerialisation.serisalise(OutboundWebSocketFrame.heartbeat(CLOCK_TIME)));
     }
 
     @Test
@@ -66,8 +65,8 @@ public class WebSocketFrameHandlerTest
 
         //then
         final InOrder inOrder = Mockito.inOrder(eventBus);
-        inOrder.verify(eventBus).send(SESSION_ID, safeSerialisation.serisalise(new OutboundWebSocketFrame("jobUpdate", job2.createPublishable())));
-        inOrder.verify(eventBus).send(SESSION_ID, safeSerialisation.serisalise(new OutboundWebSocketFrame("jobUpdate", job1.createPublishable())));
+        inOrder.verify(eventBus).send(SESSION_ID, safeSerialisation.serisalise(OutboundWebSocketFrame.jobUpdate(job2.createPublishable())));
+        inOrder.verify(eventBus).send(SESSION_ID, safeSerialisation.serisalise(OutboundWebSocketFrame.jobUpdate(job1.createPublishable())));
     }
 
     @Test
