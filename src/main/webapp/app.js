@@ -114,13 +114,14 @@ $(document).ready(function() {
         }
     }
 
-    function getJobTimeDifference(jobTime) {
-        return moment(jobTime).fromNow();
+    function getJobTimeDifference(jobTime, serverTimestamp) {
+        return moment(jobTime).from(serverTimestamp);
     }
 
-    function updateTimestamps() {
+    function updateTimestamps(currentTime) {
+        var serverTimestamp = moment(currentTime);
         $('.timestamp').each(function() {
-            $(this).text(getJobTimeDifference($(this).data('timestamp')));
+            $(this).text(getJobTimeDifference($(this).data('timestamp'), serverTimestamp));
         });
     }
 
@@ -226,7 +227,7 @@ $(document).ready(function() {
                 location.reload();
             }
             missedHeartBeats = 0;
-            updateTimestamps();
+            updateTimestamps(data.value.currentServerTime);
         }
     }
 
