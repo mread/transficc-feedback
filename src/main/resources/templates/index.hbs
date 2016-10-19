@@ -51,9 +51,9 @@
                                         <div><a target="_blank" href="{{url}}{{buildNumber}}">{{revision}}</a></div>
                                         <div><a target="_blank" href="{{url}}">{{name}}</a></div>
                                         <div class="test-report" {{#unless jobsTestResults}}hidden{{/unless}}>
-                                                <span>Passed: {{jobsTestResults.passCount}}</span>
-                                                <span>Failed: {{jobsTestResults.failCount}}</span>
-                                                <span>Ignored: {{jobsTestResults.skipCount}}</span>
+                                            <span>Passed: {{jobsTestResults.passCount}}</span>
+                                            <span>Failed: {{jobsTestResults.failCount}}</span>
+                                            <span>Ignored: {{jobsTestResults.skipCount}}</span>
                                         </div>
                                         <div data-timestamp="{{timestamp}}" class="timestamp"></div>
                                     </td>
@@ -86,7 +86,8 @@
         &nbsp;
         <span class="message">{{status}}</span>
     </div>
-    <script src="/static/app.js"></script>
-    <script src="/static/bootstrap.min.js"></script>
+</div>
+<script src="/static/app.js"></script>
+<script src="/static/bootstrap.min.js"></script>
 </body>
 </html>
