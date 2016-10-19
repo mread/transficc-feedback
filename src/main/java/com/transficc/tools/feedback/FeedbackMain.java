@@ -30,7 +30,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.offbytwo.jenkins.JenkinsServer;
 import com.transficc.tools.feedback.dao.IterationDao;
 import com.transficc.tools.feedback.messaging.MessageBus;
-import com.transficc.tools.feedback.messaging.MessageSubscriber;
+import com.transficc.tools.feedback.messaging.JobUpdateSubscriber;
 import com.transficc.tools.feedback.messaging.PublishableJob;
 import com.transficc.tools.feedback.routes.Routes;
 import com.transficc.tools.feedback.routes.WebSocketPublisher;
@@ -65,7 +65,7 @@ public class FeedbackMain
         final ClockService clockService = System::currentTimeMillis;
         final WebSocketPublisher webSocketPublisher = new WebSocketPublisher(vertx.eventBus(), safeSerialisation, clockService);
         final JenkinsServer jenkins = createJenkinsServer(feedbackProperties);
-        final BlockingQueue<PublishableJob> messageQueue = new LinkedBlockingQueue<>();
+        final BlockingQueue<PublishableJob> jobUpdateQueue = new LinkedBlockingQueue<>();
 
         final JdbcConnectionPool dataSource = JdbcConnectionPool.create("jdbc:h2:~/data/feedback", "feedback", "");
 
@@ -76,9 +76,9 @@ public class FeedbackMain
         final ThreadFactory threadFactory = new LoggingThreadFactory(SERVICE_NAME);
         final ExecutorService statusCheckerService = Executors.newFixedThreadPool(1, threadFactory);
         final ScheduledExecutorService scheduledExecutorService = Executors.newScheduledThreadPool(4, threadFactory);
-        statusCheckerService.submit(new MessageSubscriber(messageQueue, webSocketPublisher));
+        statusCheckerService.submit(new JobUpdateSubscriber(jobUpdateQueue, webSocketPublisher));
         final JobRepository jobRepository = new JobRepository();
-        final MessageBus messageBus = new MessageBus(messageQueue, webSocketPublisher);
+        final MessageBus messageBus = new MessageBus(jobUpdateQueue, webSocketPublisher);
         final JenkinsFacade jenkinsFacade = new JenkinsFacade(jenkins, new JobPrioritiesRepository(feedbackProperties.getJobsWithPriorities()), feedbackProperties.getMasterJobName(),
                                                               clockService, feedbackProperties.getVersionControl());
         final JobService jobService = new JobService(jobRepository, messageBus, jenkinsFacade, scheduledExecutorService);

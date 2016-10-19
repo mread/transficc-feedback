@@ -19,14 +19,14 @@ import com.transficc.tools.feedback.routes.WebSocketPublisher;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class MessageSubscriber implements Runnable
+public class JobUpdateSubscriber implements Runnable
 {
-    private static final Logger LOGGER = LoggerFactory.getLogger(MessageSubscriber.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(JobUpdateSubscriber.class);
     private final BlockingQueue<PublishableJob> messageQueue;
     private final WebSocketPublisher webSocketPublisher;
     private volatile boolean isRunning;
 
-    public MessageSubscriber(final BlockingQueue<PublishableJob> messageQueue, final WebSocketPublisher webSocketPublisher)
+    public JobUpdateSubscriber(final BlockingQueue<PublishableJob> messageQueue, final WebSocketPublisher webSocketPublisher)
     {
         this.messageQueue = messageQueue;
         this.webSocketPublisher = webSocketPublisher;
