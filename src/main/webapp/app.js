@@ -241,7 +241,6 @@ $(document).ready(function() {
         webSocket.onmessage = onUpdate;
         webSocket.onerror = function() {
             console.log('error detected');
-            onClose();
         }
     }
 
