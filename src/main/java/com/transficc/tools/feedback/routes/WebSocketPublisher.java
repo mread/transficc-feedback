@@ -19,9 +19,10 @@ import java.util.concurrent.ConcurrentLinkedDeque;
 import com.transficc.tools.feedback.messaging.PublishableIteration;
 import com.transficc.tools.feedback.messaging.PublishableJob;
 import com.transficc.tools.feedback.messaging.PublishableStatus;
+import com.transficc.tools.feedback.routes.websocket.OutboundWebSocketFrame;
+import com.transficc.tools.feedback.routes.websocket.WebSocketFrameHandler;
 import com.transficc.tools.feedback.util.ClockService;
 import com.transficc.tools.feedback.util.SafeSerialisation;
-import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 
 
 import io.vertx.core.Handler;
@@ -64,29 +65,17 @@ public final class WebSocketPublisher implements Handler<ServerWebSocket>
         final String id = socket.textHandlerID();
         sessions.addLast(id);
         socket.closeHandler(event -> sessions.remove(id));
-        socket.frameHandler(frame -> eventBus.send(id, safeSerialisation.serisalise(new Outbound("heartBeat", clockService.currentTimeMillis()))));
+        socket.frameHandler(new WebSocketFrameHandler(id, eventBus, safeSerialisation, clockService));
     }
 
     private void broadcastMessage(final String type, final Object content)
     {
         final Iterator<String> iterator = sessions.iterator();
-        final String outbound = safeSerialisation.serisalise(new Outbound(type, content));
+        final String outbound = safeSerialisation.serisalise(new OutboundWebSocketFrame(type, content));
         while (iterator.hasNext())
         {
             eventBus.send(iterator.next(), outbound);
         }
     }
 
-    @SuppressFBWarnings(value = "URF_UNREAD_FIELD", justification = "Serialised object")
-    private static final class Outbound
-    {
-        private String type;
-        private Object value;
-
-        private Outbound(final String type, final Object value)
-        {
-            this.type = type;
-            this.value = value;
-        }
-    }
 }
