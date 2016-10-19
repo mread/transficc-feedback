@@ -18,11 +18,13 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 
 import com.transficc.tools.feedback.messaging.PublishableJob;
+import com.transficc.tools.feedback.routes.JobStatusSnapshot;
 
-public class JobRepository
+public class JobRepository implements JobStatusSnapshot
 {
     private final Map<String, Job> jobNameToJob = new ConcurrentHashMap<>();
 
+    @Override
     public List<PublishableJob> getPublishableJobs()
     {
         return jobNameToJob.values().

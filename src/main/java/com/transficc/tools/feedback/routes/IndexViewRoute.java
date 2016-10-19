@@ -15,7 +15,6 @@ package com.transficc.tools.feedback.routes;
 import java.util.List;
 
 import com.transficc.tools.feedback.IterationRepository;
-import com.transficc.tools.feedback.JobRepository;
 import com.transficc.tools.feedback.BreakingNewsService;
 import com.transficc.tools.feedback.messaging.PublishableJob;
 
@@ -28,15 +27,15 @@ public class IndexViewRoute implements Handler<RoutingContext>
 {
     private static final String TEMPLATE = "templates/index.hbs";
     private final TemplateEngine engine;
-    private final JobRepository jobRepository;
+    private final JobStatusSnapshot jobStatusSnapshot;
     private final IterationRepository iterationRepository;
     private final BreakingNewsService breakingNewsService;
 
-    public IndexViewRoute(final TemplateEngine engine, final JobRepository jobRepository,
+    public IndexViewRoute(final TemplateEngine engine, final JobStatusSnapshot jobStatusSnapshot,
                           final IterationRepository iterationRepository, final BreakingNewsService breakingNewsService)
     {
         this.engine = engine;
-        this.jobRepository = jobRepository;
+        this.jobStatusSnapshot = jobStatusSnapshot;
         this.iterationRepository = iterationRepository;
         this.breakingNewsService = breakingNewsService;
     }
@@ -44,7 +43,7 @@ public class IndexViewRoute implements Handler<RoutingContext>
     @Override
     public void handle(final RoutingContext routingContext)
     {
-        final List<PublishableJob> jobs = jobRepository.getPublishableJobs();
+        final List<PublishableJob> jobs = jobStatusSnapshot.getPublishableJobs();
         routingContext.put("jobs", jobs);
         routingContext.put("iteration", iterationRepository.iteration());
         routingContext.put("status", breakingNewsService.status());

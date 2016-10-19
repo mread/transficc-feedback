@@ -125,7 +125,7 @@ $(document).ready(function() {
     function onOpen() {
         if (heartBeatInterval === null) {
             if ($('#disconnected').is(':visible')) {
-                location.reload();
+                webSocket.send('snapshot');
             }
             missedHeartBeats = 0;
             $('#disconnected').hide();

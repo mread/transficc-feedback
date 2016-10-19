@@ -63,7 +63,8 @@ public class FeedbackMain
         mapper.setVisibility(PropertyAccessor.FIELD, JsonAutoDetect.Visibility.ANY);
         final SafeSerialisation safeSerialisation = new SafeSerialisation(mapper);
         final ClockService clockService = System::currentTimeMillis;
-        final WebSocketPublisher webSocketPublisher = new WebSocketPublisher(vertx.eventBus(), safeSerialisation, clockService);
+        final JobRepository jobRepository = new JobRepository();
+        final WebSocketPublisher webSocketPublisher = new WebSocketPublisher(vertx.eventBus(), safeSerialisation, clockService, jobRepository);
         final JenkinsServer jenkins = createJenkinsServer(feedbackProperties);
         final BlockingQueue<PublishableJob> jobUpdateQueue = new LinkedBlockingQueue<>();
 
@@ -77,7 +78,6 @@ public class FeedbackMain
         final ExecutorService statusCheckerService = Executors.newFixedThreadPool(1, threadFactory);
         final ScheduledExecutorService scheduledExecutorService = Executors.newScheduledThreadPool(4, threadFactory);
         statusCheckerService.submit(new JobUpdateSubscriber(jobUpdateQueue, webSocketPublisher));
-        final JobRepository jobRepository = new JobRepository();
         final MessageBus messageBus = new MessageBus(jobUpdateQueue, webSocketPublisher);
         final JenkinsFacade jenkinsFacade = new JenkinsFacade(jenkins, new JobPrioritiesRepository(feedbackProperties.getJobsWithPriorities()), feedbackProperties.getMasterJobName(),
                                                               clockService, feedbackProperties.getVersionControl());
