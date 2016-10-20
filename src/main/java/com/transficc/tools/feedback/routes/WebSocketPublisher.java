@@ -72,6 +72,11 @@ public final class WebSocketPublisher implements Handler<ServerWebSocket>
         socket.frameHandler(new WebSocketFrameHandler(id, eventBus, safeSerialisation, clockService, jobStatusSnapshot, startUpTime));
     }
 
+    public void onJobRemoved(final String jobName)
+    {
+        broadcastMessage(OutboundWebSocketFrame.jobDeleted(jobName));
+    }
+
     private void broadcastMessage(final OutboundWebSocketFrame outboundWebSocketFrame)
     {
         final Iterator<String> iterator = sessions.iterator();
@@ -81,5 +86,4 @@ public final class WebSocketPublisher implements Handler<ServerWebSocket>
             eventBus.send(iterator.next(), outbound);
         }
     }
-
 }

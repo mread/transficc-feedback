@@ -46,8 +46,7 @@ public class JobService
             future.cancel(true);
         }
         jobRepository.remove(jobName);
-
-
+        messageBus.jobRemoved(jobName);
     }
 
     public void add(final Job job)

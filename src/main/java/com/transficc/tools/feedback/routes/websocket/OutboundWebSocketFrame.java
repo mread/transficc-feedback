@@ -22,6 +22,11 @@ public final class OutboundWebSocketFrame
         return new OutboundWebSocketFrame(FrameType.JOB_UPDATE, job);
     }
 
+    public static OutboundWebSocketFrame jobDeleted(final String jobName)
+    {
+        return new OutboundWebSocketFrame(FrameType.JOB_DELETED, jobName);
+    }
+
     public static OutboundWebSocketFrame statusUpdate(final PublishableStatus status)
     {
         return new OutboundWebSocketFrame(FrameType.STATUS_UPDATE, status);

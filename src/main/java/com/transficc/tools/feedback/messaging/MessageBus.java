@@ -45,4 +45,9 @@ public class MessageBus
     {
         webSocketPublisher.onStatusUpdate(new PublishableStatus(status));
     }
+
+    public void jobRemoved(final String jobName)
+    {
+        webSocketPublisher.onJobRemoved(jobName);
+    }
 }

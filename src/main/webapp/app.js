@@ -211,6 +211,10 @@ $(document).ready(function() {
         regulariseJobHeight();
     }
 
+    function onJobRemoved(jobName) {
+        $job = $('#' + jobName).parent().remove();
+    }
+
     function onUpdate(message) {
         var data = JSON.parse(message.data);
         var type = data.type;
@@ -228,6 +232,8 @@ $(document).ready(function() {
             }
             missedHeartBeats = 0;
             updateTimestamps(data.value.currentServerTime);
+        } else if (type === 'JOB_DELETED') {
+            onJobRemoved(data.value);
         }
     }
 
