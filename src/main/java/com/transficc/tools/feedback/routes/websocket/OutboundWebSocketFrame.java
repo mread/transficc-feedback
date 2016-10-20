@@ -8,10 +8,10 @@ import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 @SuppressFBWarnings(value = "URF_UNREAD_FIELD", justification = "Serialised object")
 public final class OutboundWebSocketFrame
 {
-    private final String type;
+    private final FrameType type;
     private final Object value;
 
-    private OutboundWebSocketFrame(final String type, final Object value)
+    private OutboundWebSocketFrame(final FrameType type, final Object value)
     {
         this.type = type;
         this.value = value;
@@ -19,21 +19,21 @@ public final class OutboundWebSocketFrame
 
     public static OutboundWebSocketFrame jobUpdate(final PublishableJob job)
     {
-        return new OutboundWebSocketFrame("jobUpdate", job);
+        return new OutboundWebSocketFrame(FrameType.JOB_UPDATE, job);
     }
 
     public static OutboundWebSocketFrame statusUpdate(final PublishableStatus status)
     {
-        return new OutboundWebSocketFrame("statusUpdate", status);
+        return new OutboundWebSocketFrame(FrameType.STATUS_UPDATE, status);
     }
 
     public static OutboundWebSocketFrame iterationUpdate(final PublishableIteration iteration)
     {
-        return new OutboundWebSocketFrame("iterationUpdate", iteration);
+        return new OutboundWebSocketFrame(FrameType.ITERATION_UPDATE, iteration);
     }
 
     public static OutboundWebSocketFrame heartbeat(final HeartbeatMessage heartbeatMessage)
     {
-        return new OutboundWebSocketFrame("heartBeat", heartbeatMessage);
+        return new OutboundWebSocketFrame(FrameType.HEARTBEAT, heartbeatMessage);
     }
 }

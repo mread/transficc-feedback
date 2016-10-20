@@ -215,13 +215,13 @@ $(document).ready(function() {
         var data = JSON.parse(message.data);
         var type = data.type;
 
-        if (type === 'jobUpdate') {
+        if (type === 'JOB_UPDATE') {
             onJobUpdate(data.value);
-        } else if (type === 'statusUpdate') {
+        } else if (type === 'STATUS_UPDATE') {
             onStatusUpdate(data.value.status);
-        } else if (type === 'iterationUpdate') {
+        } else if (type === 'ITERATION_UPDATE') {
             $('#iteration').html(data.value.iteration);
-        } else if (type === 'heartBeat') {
+        } else if (type === 'HEARTBEAT') {
             if (data.value.serverStartUpTime !== startUpTime) {
                 console.log('Server update detected. Reloading client');
                 location.reload();
