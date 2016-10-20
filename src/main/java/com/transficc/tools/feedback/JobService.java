@@ -25,7 +25,7 @@ public class JobService
     private final JobRepository jobRepository;
     private final MessageBus messageBus;
     private final JenkinsFacade jenkinsFacade;
-    private final Map<String, ScheduledFuture> jobNameToScheduledRunnable = new ConcurrentHashMap<>();
+    private final Map<String, ScheduledFuture<?>> jobNameToScheduledRunnable = new ConcurrentHashMap<>();
     private final ScheduledExecutorService scheduledExecutorService;
 
     public JobService(final JobRepository jobRepository,
@@ -40,7 +40,7 @@ public class JobService
 
     public void onJobNotFound(final String jobName)
     {
-        final ScheduledFuture future = jobNameToScheduledRunnable.remove(jobName);
+        final ScheduledFuture<?> future = jobNameToScheduledRunnable.remove(jobName);
         if (future != null)
         {
             future.cancel(true);
@@ -54,7 +54,8 @@ public class JobService
         final GetLatestJobBuildInformation statusChecker = new GetLatestJobBuildInformation(messageBus, this, job, jenkinsFacade);
         final String jobName = job.getName();
         jobRepository.put(jobName, job);
-        jobNameToScheduledRunnable.put(jobName, scheduledExecutorService.scheduleAtFixedRate(statusChecker, 0, 5, TimeUnit.SECONDS));
+        final ScheduledFuture<?> scheduledFuture = scheduledExecutorService.scheduleAtFixedRate(statusChecker, 0, 5, TimeUnit.SECONDS);
+        jobNameToScheduledRunnable.put(jobName, scheduledFuture);
     }
 
     public boolean jobExists(final String jobName)
