@@ -15,39 +15,41 @@ package com.transficc.tools.feedback.messaging;
 import java.util.concurrent.BlockingQueue;
 
 import com.transficc.tools.feedback.Job;
-import com.transficc.tools.feedback.routes.WebSocketPublisher;
 
 public class MessageBus
 {
-    private final BlockingQueue<PublishableJob> jobUpdates;
-    private final WebSocketPublisher webSocketPublisher;
+    private final BlockingQueue<Object> messages;
 
-    public MessageBus(final BlockingQueue<PublishableJob> jobUpdates, final WebSocketPublisher webSocketPublisher)
+    public MessageBus(final BlockingQueue<Object> messages)
     {
-        this.jobUpdates = jobUpdates;
-        this.webSocketPublisher = webSocketPublisher;
+        this.messages = messages;
     }
 
     public void sendUpdate(final Job job)
     {
-        if (!jobUpdates.offer(job.createPublishable()))
-        {
-            throw new IllegalStateException("Failed to add job to the queue");
-        }
+        offer(job.createPublishable());
     }
 
     public void iterationUpdate(final String iteration)
     {
-        webSocketPublisher.onIterationUpdate(new PublishableIteration(iteration));
+        offer(new PublishableIteration(iteration));
     }
 
     public void statusUpdate(final String status)
     {
-        webSocketPublisher.onStatusUpdate(new PublishableStatus(status));
+        offer(new PublishableStatus(status));
     }
 
     public void jobRemoved(final String jobName)
     {
-        webSocketPublisher.onJobRemoved(jobName);
+        offer(jobName);
+    }
+
+    private void offer(final Object message)
+    {
+        if (!messages.offer(message))
+        {
+            throw new IllegalStateException("Failed to add job to the queue");
+        }
     }
 }

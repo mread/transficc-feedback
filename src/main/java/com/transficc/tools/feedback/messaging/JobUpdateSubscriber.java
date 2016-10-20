@@ -22,11 +22,11 @@ import org.slf4j.LoggerFactory;
 public class JobUpdateSubscriber implements Runnable
 {
     private static final Logger LOGGER = LoggerFactory.getLogger(JobUpdateSubscriber.class);
-    private final BlockingQueue<PublishableJob> messageQueue;
+    private final BlockingQueue<Object> messageQueue;
     private final WebSocketPublisher webSocketPublisher;
     private volatile boolean isRunning;
 
-    public JobUpdateSubscriber(final BlockingQueue<PublishableJob> messageQueue, final WebSocketPublisher webSocketPublisher)
+    public JobUpdateSubscriber(final BlockingQueue<Object> messageQueue, final WebSocketPublisher webSocketPublisher)
     {
         this.messageQueue = messageQueue;
         this.webSocketPublisher = webSocketPublisher;
@@ -42,8 +42,8 @@ public class JobUpdateSubscriber implements Runnable
         {
             try
             {
-                final PublishableJob job = messageQueue.take();
-                webSocketPublisher.onJobUpdate(job);
+                final Object message = messageQueue.take();
+                webSocketPublisher.onMessage(message);
             }
             catch (final InterruptedException e)
             {

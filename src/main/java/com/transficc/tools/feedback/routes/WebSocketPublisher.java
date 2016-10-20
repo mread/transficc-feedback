@@ -24,6 +24,9 @@ import com.transficc.tools.feedback.routes.websocket.WebSocketFrameHandler;
 import com.transficc.tools.feedback.util.ClockService;
 import com.transficc.tools.feedback.util.SafeSerialisation;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 
 import io.vertx.core.Handler;
 import io.vertx.core.eventbus.EventBus;
@@ -32,6 +35,7 @@ import io.vertx.core.http.ServerWebSocket;
 
 public final class WebSocketPublisher implements Handler<ServerWebSocket>
 {
+    private static final Logger LOGGER = LoggerFactory.getLogger(WebSocketPublisher.class);
     private final Deque<String> sessions = new ConcurrentLinkedDeque<>();
     private final EventBus eventBus;
     private final SafeSerialisation safeSerialisation;
@@ -48,17 +52,41 @@ public final class WebSocketPublisher implements Handler<ServerWebSocket>
         this.startUpTime = startUpTime;
     }
 
-    public void onJobUpdate(final PublishableJob job)
+    public void onMessage(final Object message)
+    {
+        if (message instanceof PublishableJob)
+        {
+            onJobUpdate((PublishableJob)message);
+        }
+        else if (message instanceof PublishableStatus)
+        {
+            onStatusUpdate((PublishableStatus)message);
+        }
+        else if (message instanceof PublishableIteration)
+        {
+            onIterationUpdate((PublishableIteration)message);
+        }
+        else if (message instanceof String)
+        {
+            onJobRemoved((String)message);
+        }
+        else
+        {
+            LOGGER.error("Unknown message: " + message);
+        }
+    }
+
+    private void onJobUpdate(final PublishableJob job)
     {
         broadcastMessage(OutboundWebSocketFrame.jobUpdate(job));
     }
 
-    public void onStatusUpdate(final PublishableStatus statusUpdate)
+    private void onStatusUpdate(final PublishableStatus statusUpdate)
     {
         broadcastMessage(OutboundWebSocketFrame.statusUpdate(statusUpdate));
     }
 
-    public void onIterationUpdate(final PublishableIteration iterationUpdate)
+    private void onIterationUpdate(final PublishableIteration iterationUpdate)
     {
         broadcastMessage(OutboundWebSocketFrame.iterationUpdate(iterationUpdate));
     }
@@ -72,7 +100,7 @@ public final class WebSocketPublisher implements Handler<ServerWebSocket>
         socket.frameHandler(new WebSocketFrameHandler(id, eventBus, safeSerialisation, clockService, jobStatusSnapshot, startUpTime));
     }
 
-    public void onJobRemoved(final String jobName)
+    private void onJobRemoved(final String jobName)
     {
         broadcastMessage(OutboundWebSocketFrame.jobDeleted(jobName));
     }

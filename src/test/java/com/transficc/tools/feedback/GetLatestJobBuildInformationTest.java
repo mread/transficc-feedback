@@ -54,7 +54,7 @@ public class GetLatestJobBuildInformationTest
     private JobService jobService;
 
     private GetLatestJobBuildInformation jobChecker;
-    private BlockingQueue<PublishableJob> messageBusQueue;
+    private BlockingQueue<Object> messageBusQueue;
     private String jobName;
 
     @Before
@@ -64,7 +64,7 @@ public class GetLatestJobBuildInformationTest
         messageBusQueue = new LinkedBlockingQueue<>();
         jobName = "Tom is the best";
         given(jobWithDetails.isBuildable()).willReturn(true);
-        final MessageBus messageBus = new MessageBus(messageBusQueue, null);
+        final MessageBus messageBus = new MessageBus(messageBusQueue);
         this.jobChecker = new GetLatestJobBuildInformation(messageBus, jobService, new Job(jobName, "tom-url", 0, JenkinsFacade.JobStatus.SUCCESS, false, VersionControl.GIT),
                                                            new JenkinsFacade(jenkins, null, null, () -> 10, VersionControl.GIT));
     }
@@ -103,7 +103,7 @@ public class GetLatestJobBuildInformationTest
 
         //then
 
-        final PublishableJob actualJob = messageBusQueue.take();
+        final PublishableJob actualJob = (PublishableJob)messageBusQueue.take();
         assertThat(actualJob, is(new PublishableJob(jobName, jobUrl, 0, revision, JenkinsFacade.JobStatus.SUCCESS, 0, 5L, 50.0, new String[0], false,
                                                     new JenkinsFacade.TestResults(1, 1, 2))));
         verifyZeroInteractions(jobService);

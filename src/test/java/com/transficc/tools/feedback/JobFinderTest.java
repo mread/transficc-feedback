@@ -58,9 +58,9 @@ public class JobFinderTest
         MockitoAnnotations.initMocks(this);
         BDDMockito.given(scheduledExecutorService.scheduleAtFixedRate(any(Runnable.class), anyLong(), anyLong(), any(TimeUnit.class))).willReturn(scheduledFuture);
         jobRepository = new JobRepository();
-        final LinkedBlockingQueue<PublishableJob> messageBusQueue = new LinkedBlockingQueue<>();
-        final MessageBus messageBus = new MessageBus(messageBusQueue,
-                                                     null);
+        final LinkedBlockingQueue<Object> messageBusQueue = new LinkedBlockingQueue<>();
+        final MessageBus messageBus = new MessageBus(messageBusQueue
+        );
         jobFinder = new JobFinder(new JobService(jobRepository, messageBus, null, scheduledExecutorService),
                                   new JenkinsFacade(jenkins, new JobPrioritiesRepository(Collections.emptyMap()), "", () -> 10, VersionControl.GIT));
     }
