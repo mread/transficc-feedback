@@ -25,6 +25,7 @@ import java.util.concurrent.TimeUnit;
 import com.offbytwo.jenkins.JenkinsServer;
 import com.transficc.tools.feedback.messaging.MessageBus;
 import com.transficc.tools.feedback.messaging.PublishableJob;
+import com.transficc.tools.feedback.routes.websocket.OutboundWebSocketFrame;
 
 import org.hamcrest.MatcherAssert;
 import org.hamcrest.core.Is;
@@ -58,9 +59,8 @@ public class JobFinderTest
         MockitoAnnotations.initMocks(this);
         BDDMockito.given(scheduledExecutorService.scheduleAtFixedRate(any(Runnable.class), anyLong(), anyLong(), any(TimeUnit.class))).willReturn(scheduledFuture);
         jobRepository = new JobRepository();
-        final LinkedBlockingQueue<Object> messageBusQueue = new LinkedBlockingQueue<>();
-        final MessageBus messageBus = new MessageBus(messageBusQueue
-        );
+        final LinkedBlockingQueue<OutboundWebSocketFrame> messageBusQueue = new LinkedBlockingQueue<>();
+        final MessageBus messageBus = new MessageBus(messageBusQueue);
         jobFinder = new JobFinder(new JobService(jobRepository, messageBus, null, scheduledExecutorService),
                                   new JenkinsFacade(jenkins, new JobPrioritiesRepository(Collections.emptyMap()), "", () -> 10, VersionControl.GIT));
     }

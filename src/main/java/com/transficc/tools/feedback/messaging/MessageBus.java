@@ -15,37 +15,38 @@ package com.transficc.tools.feedback.messaging;
 import java.util.concurrent.BlockingQueue;
 
 import com.transficc.tools.feedback.Job;
+import com.transficc.tools.feedback.routes.websocket.OutboundWebSocketFrame;
 
 public class MessageBus
 {
-    private final BlockingQueue<Object> messages;
+    private final BlockingQueue<OutboundWebSocketFrame> messages;
 
-    public MessageBus(final BlockingQueue<Object> messages)
+    public MessageBus(final BlockingQueue<OutboundWebSocketFrame> messages)
     {
         this.messages = messages;
     }
 
     public void sendUpdate(final Job job)
     {
-        offer(job.createPublishable());
+        offer(OutboundWebSocketFrame.jobUpdate(job.createPublishable()));
     }
 
     public void iterationUpdate(final String iteration)
     {
-        offer(new PublishableIteration(iteration));
+        offer(OutboundWebSocketFrame.iterationUpdate(new PublishableIteration(iteration)));
     }
 
     public void statusUpdate(final String status)
     {
-        offer(new PublishableStatus(status));
+        offer(OutboundWebSocketFrame.statusUpdate(new PublishableStatus(status)));
     }
 
     public void jobRemoved(final String jobName)
     {
-        offer(jobName);
+        offer(OutboundWebSocketFrame.jobDeleted(jobName));
     }
 
-    private void offer(final Object message)
+    private void offer(final OutboundWebSocketFrame message)
     {
         if (!messages.offer(message))
         {

@@ -29,6 +29,8 @@ import com.offbytwo.jenkins.model.BuildWithDetails;
 import com.offbytwo.jenkins.model.JobWithDetails;
 import com.transficc.tools.feedback.messaging.MessageBus;
 import com.transficc.tools.feedback.messaging.PublishableJob;
+import com.transficc.tools.feedback.routes.websocket.FrameType;
+import com.transficc.tools.feedback.routes.websocket.OutboundWebSocketFrame;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -54,7 +56,7 @@ public class GetLatestJobBuildInformationTest
     private JobService jobService;
 
     private GetLatestJobBuildInformation jobChecker;
-    private BlockingQueue<Object> messageBusQueue;
+    private BlockingQueue<OutboundWebSocketFrame> messageBusQueue;
     private String jobName;
 
     @Before
@@ -103,8 +105,9 @@ public class GetLatestJobBuildInformationTest
 
         //then
 
-        final PublishableJob actualJob = (PublishableJob)messageBusQueue.take();
-        assertThat(actualJob, is(new PublishableJob(jobName, jobUrl, 0, revision, JenkinsFacade.JobStatus.SUCCESS, 0, 5L, 50.0, new String[0], false,
+        final OutboundWebSocketFrame actualJob = messageBusQueue.take();
+        assertThat(actualJob.getType(), is(FrameType.JOB_UPDATE));
+        assertThat(actualJob.getValue(), is(new PublishableJob(jobName, jobUrl, 0, revision, JenkinsFacade.JobStatus.SUCCESS, 0, 5L, 50.0, new String[0], false,
                                                     new JenkinsFacade.TestResults(1, 1, 2))));
         verifyZeroInteractions(jobService);
     }

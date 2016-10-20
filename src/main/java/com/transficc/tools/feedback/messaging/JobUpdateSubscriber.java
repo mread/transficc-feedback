@@ -15,6 +15,7 @@ package com.transficc.tools.feedback.messaging;
 import java.util.concurrent.BlockingQueue;
 
 import com.transficc.tools.feedback.routes.WebSocketPublisher;
+import com.transficc.tools.feedback.routes.websocket.OutboundWebSocketFrame;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -22,11 +23,11 @@ import org.slf4j.LoggerFactory;
 public class JobUpdateSubscriber implements Runnable
 {
     private static final Logger LOGGER = LoggerFactory.getLogger(JobUpdateSubscriber.class);
-    private final BlockingQueue<Object> messageQueue;
+    private final BlockingQueue<OutboundWebSocketFrame> messageQueue;
     private final WebSocketPublisher webSocketPublisher;
     private volatile boolean isRunning;
 
-    public JobUpdateSubscriber(final BlockingQueue<Object> messageQueue, final WebSocketPublisher webSocketPublisher)
+    public JobUpdateSubscriber(final BlockingQueue<OutboundWebSocketFrame> messageQueue, final WebSocketPublisher webSocketPublisher)
     {
         this.messageQueue = messageQueue;
         this.webSocketPublisher = webSocketPublisher;
@@ -42,7 +43,7 @@ public class JobUpdateSubscriber implements Runnable
         {
             try
             {
-                final Object message = messageQueue.take();
+                final OutboundWebSocketFrame message = messageQueue.take();
                 webSocketPublisher.onMessage(message);
             }
             catch (final InterruptedException e)

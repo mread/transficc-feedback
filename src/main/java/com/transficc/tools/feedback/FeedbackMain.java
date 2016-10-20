@@ -33,6 +33,7 @@ import com.transficc.tools.feedback.messaging.JobUpdateSubscriber;
 import com.transficc.tools.feedback.messaging.MessageBus;
 import com.transficc.tools.feedback.routes.Routes;
 import com.transficc.tools.feedback.routes.WebSocketPublisher;
+import com.transficc.tools.feedback.routes.websocket.OutboundWebSocketFrame;
 import com.transficc.tools.feedback.util.ClockService;
 import com.transficc.tools.feedback.util.FeedbackProperties;
 import com.transficc.tools.feedback.util.LoggingThreadFactory;
@@ -66,7 +67,7 @@ public class FeedbackMain
         final long startUpTime = clockService.currentTimeMillis();
         final WebSocketPublisher webSocketPublisher = new WebSocketPublisher(vertx.eventBus(), safeSerialisation, clockService, jobRepository, startUpTime);
         final JenkinsServer jenkins = createJenkinsServer(feedbackProperties);
-        final BlockingQueue<Object> messageQueue = new LinkedBlockingQueue<>();
+        final BlockingQueue<OutboundWebSocketFrame> messageQueue = new LinkedBlockingQueue<>();
 
         final JdbcConnectionPool dataSource = JdbcConnectionPool.create("jdbc:h2:~/data/feedback", "feedback", "");
 

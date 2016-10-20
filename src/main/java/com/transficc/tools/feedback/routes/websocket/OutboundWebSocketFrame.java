@@ -17,6 +17,16 @@ public final class OutboundWebSocketFrame
         this.value = value;
     }
 
+    public FrameType getType()
+    {
+        return type;
+    }
+
+    public Object getValue()
+    {
+        return value;
+    }
+
     public static OutboundWebSocketFrame jobUpdate(final PublishableJob job)
     {
         return new OutboundWebSocketFrame(FrameType.JOB_UPDATE, job);
