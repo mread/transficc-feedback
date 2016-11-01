@@ -47,6 +47,7 @@ public class JobFinderTest
     private JenkinsServer jenkins;
     @Mock
     private ScheduledExecutorService scheduledExecutorService;
+    @SuppressWarnings("rawtypes")
     @Mock
     private ScheduledFuture scheduledFuture;
     private JobFinder jobFinder;
@@ -70,10 +71,10 @@ public class JobFinderTest
     public void shouldOnlyAddEachJobOnce() throws IOException
     {
         final Map<String, com.offbytwo.jenkins.model.Job> result1 = new HashMap<>();
-        result1.put("Tom", new MessageBuilder(com.offbytwo.jenkins.model.Job.class).setField("name", "Tom").setField("url", "stuff.com").build());
-        result1.put("Chinar", new MessageBuilder(com.offbytwo.jenkins.model.Job.class).setField("name", "Chinar").setField("url", "stuff.com").build());
+        result1.put("Tom", new MessageBuilder<>(com.offbytwo.jenkins.model.Job.class).setField("name", "Tom").setField("url", "stuff.com").build());
+        result1.put("Chinar", new MessageBuilder<>(com.offbytwo.jenkins.model.Job.class).setField("name", "Chinar").setField("url", "stuff.com").build());
         final Map<String, com.offbytwo.jenkins.model.Job> result2 = new HashMap<>();
-        result2.put("Tom", new MessageBuilder(com.offbytwo.jenkins.model.Job.class).setField("name", "Tom").setField("url", "stuff.com").build());
+        result2.put("Tom", new MessageBuilder<>(com.offbytwo.jenkins.model.Job.class).setField("name", "Tom").setField("url", "stuff.com").build());
         BDDMockito.given(jenkins.getJobs()).willReturn(result1, result2);
 
         jobFinder.run();
@@ -96,9 +97,9 @@ public class JobFinderTest
     public void shouldAddJobAsTheyAreCreated() throws IOException
     {
         final Map<String, com.offbytwo.jenkins.model.Job> result1 = new HashMap<>();
-        result1.put("Tom", new MessageBuilder(com.offbytwo.jenkins.model.Job.class).setField("name", "Chinar").setField("url", "stuff.com").build());
+        result1.put("Tom", new MessageBuilder<>(com.offbytwo.jenkins.model.Job.class).setField("name", "Chinar").setField("url", "stuff.com").build());
         final Map<String, com.offbytwo.jenkins.model.Job> result2 = new HashMap<>();
-        result2.put("Tom", new MessageBuilder(com.offbytwo.jenkins.model.Job.class).setField("name", "Tom").setField("url", "stuff.com").build());
+        result2.put("Tom", new MessageBuilder<>(com.offbytwo.jenkins.model.Job.class).setField("name", "Tom").setField("url", "stuff.com").build());
         BDDMockito.given(jenkins.getJobs()).willReturn(result1, result2);
 
         jobFinder.run();

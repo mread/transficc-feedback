@@ -14,11 +14,11 @@ package com.transficc.tools.feedback;
 
 import java.lang.reflect.Field;
 
-public final class MessageBuilder
+public final class MessageBuilder<T>
 {
-    private final Object instance;
+    private final T instance;
 
-    public MessageBuilder(final Class clazz)
+    public MessageBuilder(final Class<T> clazz)
     {
         try
         {
@@ -30,7 +30,7 @@ public final class MessageBuilder
         }
     }
 
-    public MessageBuilder setField(final String field, final Object value)
+    public MessageBuilder<T> setField(final String field, final Object value)
     {
         try
         {
@@ -47,9 +47,8 @@ public final class MessageBuilder
         }
     }
 
-    @SuppressWarnings({"unchecked", "TypeParameterUnusedInFormals"})
-    public <T> T build()
+    public T build()
     {
-        return (T)instance;
+        return instance;
     }
 }

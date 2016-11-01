@@ -91,7 +91,7 @@ public class GetLatestJobBuildInformationTest
 
         given(jenkins.getJob(jobName)).willReturn(jobWithDetails);
         given(jobWithDetails.getLastBuild()).willReturn(lastBuild);
-        given(lastBuild.details()).willReturn(new MessageBuilder(BuildWithDetails.class)
+        given(lastBuild.details()).willReturn(new MessageBuilder<>(BuildWithDetails.class)
                                                       .setField("actions", actions)
                                                       .setField("building", false)
                                                       .setField("changeSet", buildChangeSet)
@@ -127,7 +127,7 @@ public class GetLatestJobBuildInformationTest
 
         given(jenkins.getJob(jobName)).willReturn(jobWithDetails);
         given(jobWithDetails.getLastBuild()).willReturn(lastBuild);
-        given(lastBuild.details()).willReturn(new MessageBuilder(BuildWithDetails.class)
+        given(lastBuild.details()).willReturn(new MessageBuilder<>(BuildWithDetails.class)
                                                       .setField("actions", actions)
                                                       .setField("building", false)
                                                       .setField("changeSet", buildChangeSet)
