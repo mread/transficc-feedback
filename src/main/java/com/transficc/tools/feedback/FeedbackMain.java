@@ -82,7 +82,8 @@ public class FeedbackMain
         final MessageBus messageBus = new MessageBus(messageQueue);
         final JenkinsFacade jenkinsFacade = new JenkinsFacade(jenkins, new JobPrioritiesRepository(feedbackProperties.getJobsWithPriorities()), feedbackProperties.getMasterJobName(),
                                                               clockService, feedbackProperties.getVersionControl());
-        final JobService jobService = new JobService(jobRepository, messageBus, jenkinsFacade, scheduledExecutorService);
+        final JobService jobService = new JobService(jobRepository, messageBus, scheduledExecutorService,
+                                                     new GetLatestJobBuildInformationFactory(jenkinsFacade, messageBus, feedbackProperties.getJobNamesForTestResultsToPersist()));
         final IterationRepository iterationRepository = new IterationRepository(messageBus, new IterationDao(dataSource));
         Routes.setup(server, jobRepository, iterationRepository, new BreakingNewsService(messageBus), webSocketPublisher, Router.router(vertx), startUpTime);
         final JobFinder jobFinder = new JobFinder(jobService, jenkinsFacade);

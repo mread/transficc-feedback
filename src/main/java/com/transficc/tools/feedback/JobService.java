@@ -24,18 +24,18 @@ public class JobService
 {
     private final JobRepository jobRepository;
     private final MessageBus messageBus;
-    private final JenkinsFacade jenkinsFacade;
-    private final Map<String, ScheduledFuture<?>> jobNameToScheduledRunnable = new ConcurrentHashMap<>();
+    private final Map<String, ScheduledFuture<?>> jobNameToScheduledRunnable;
     private final ScheduledExecutorService scheduledExecutorService;
+    private final GetLatestJobBuildInformationFactory getLatestJobBuildInformationFactory;
 
-    public JobService(final JobRepository jobRepository,
-                      final MessageBus messageBus,
-                      final JenkinsFacade jenkinsFacade, final ScheduledExecutorService scheduledExecutorService)
+    public JobService(final JobRepository jobRepository, final MessageBus messageBus, final ScheduledExecutorService scheduledExecutorService,
+                      final GetLatestJobBuildInformationFactory getLatestJobBuildInformationFactory)
     {
         this.jobRepository = jobRepository;
         this.messageBus = messageBus;
-        this.jenkinsFacade = jenkinsFacade;
         this.scheduledExecutorService = scheduledExecutorService;
+        this.getLatestJobBuildInformationFactory = getLatestJobBuildInformationFactory;
+        jobNameToScheduledRunnable = new ConcurrentHashMap<>();
     }
 
     public void onJobNotFound(final String jobName)
@@ -51,7 +51,7 @@ public class JobService
 
     public void add(final Job job)
     {
-        final GetLatestJobBuildInformation statusChecker = new GetLatestJobBuildInformation(messageBus, this, job, jenkinsFacade);
+        final GetLatestJobBuildInformation statusChecker = getLatestJobBuildInformationFactory.create(job, this);
         final String jobName = job.getName();
         jobRepository.put(jobName, job);
         final ScheduledFuture<?> scheduledFuture = scheduledExecutorService.scheduleAtFixedRate(statusChecker, 0, 5, TimeUnit.SECONDS);

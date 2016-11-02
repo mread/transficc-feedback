@@ -68,7 +68,7 @@ public class GetLatestJobBuildInformationTest
         given(jobWithDetails.isBuildable()).willReturn(true);
         final MessageBus messageBus = new MessageBus(messageBusQueue);
         this.jobChecker = new GetLatestJobBuildInformation(messageBus, jobService, new Job(jobName, "tom-url", 0, JenkinsFacade.JobStatus.SUCCESS, false, VersionControl.GIT),
-                                                           new JenkinsFacade(jenkins, null, null, () -> 10, VersionControl.GIT));
+                                                           new JenkinsFacade(jenkins, null, null, () -> 10, VersionControl.GIT), false);
     }
 
     @Test

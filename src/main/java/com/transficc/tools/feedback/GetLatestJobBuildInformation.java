@@ -22,17 +22,18 @@ public class GetLatestJobBuildInformation implements Runnable
 {
     private static final Logger LOGGER = LoggerFactory.getLogger(GetLatestJobBuildInformation.class);
     private final Job job;
+    private final boolean shouldPersistTestResults;
     private final MessageBus messageBus;
     private final JenkinsFacade jenkinsFacade;
     private final JobService jobService;
 
-    public GetLatestJobBuildInformation(final MessageBus messageBus,
-                                        final JobService jobService, final Job job, final JenkinsFacade jenkinsFacade)
+    public GetLatestJobBuildInformation(final MessageBus messageBus, final JobService jobService, final Job job, final JenkinsFacade jenkinsFacade, final boolean shouldPersistTestResults)
     {
         this.messageBus = messageBus;
         this.jenkinsFacade = jenkinsFacade;
         this.jobService = jobService;
         this.job = job;
+        this.shouldPersistTestResults = shouldPersistTestResults;
     }
 
     @Override
@@ -71,4 +72,8 @@ public class GetLatestJobBuildInformation implements Runnable
         }
     }
 
+    boolean isShouldPersistTestResults()
+    {
+        return shouldPersistTestResults;
+    }
 }

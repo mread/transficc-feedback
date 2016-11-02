@@ -62,8 +62,9 @@ public class JobFinderTest
         jobRepository = new JobRepository();
         final LinkedBlockingQueue<OutboundWebSocketFrame> messageBusQueue = new LinkedBlockingQueue<>();
         final MessageBus messageBus = new MessageBus(messageBusQueue);
-        jobFinder = new JobFinder(new JobService(jobRepository, messageBus, null, scheduledExecutorService),
-                                  new JenkinsFacade(jenkins, new JobPrioritiesRepository(Collections.emptyMap()), "", () -> 10, VersionControl.GIT));
+        final JenkinsFacade jenkinsFacade = new JenkinsFacade(jenkins, new JobPrioritiesRepository(Collections.emptyMap()), "", () -> 10, VersionControl.GIT);
+        jobFinder = new JobFinder(new JobService(jobRepository, messageBus, scheduledExecutorService, new GetLatestJobBuildInformationFactory(jenkinsFacade, messageBus, new String[0])),
+                                  jenkinsFacade);
     }
 
     @SuppressWarnings("unchecked")
