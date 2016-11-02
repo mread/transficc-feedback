@@ -23,16 +23,18 @@ public class JobTestResultsDaoTest extends DaoTest
     public void shouldBeAbleToInsertTestResults()
     {
         final String revision = "Test124";
+        final String jobName = "TomJob";
         final int totalTests = 100;
         final int passed = 98;
         final int failed = 2;
         final int duration = 20;
         final ZonedDateTime startTime = ZonedDateTime.now(Clock.systemUTC()).minusSeconds(duration);
 
-        dao.addTestResults(revision, totalTests, passed, failed, startTime, duration);
+        dao.addTestResults(jobName, revision, totalTests, passed, failed, startTime, duration);
 
         final JobTestResultsDao.TestEntry testResult = dao.getTestResult(revision);
         assertThat(testResult.getRevision(), is(revision));
+        assertThat(testResult.getJobName(), is(jobName));
         assertThat(testResult.getTotalTests(), is(totalTests));
         assertThat(testResult.getPassedTests(), is(passed));
         assertThat(testResult.getFailedTests(), is(failed));

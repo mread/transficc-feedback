@@ -102,7 +102,7 @@ public class GetLatestJobBuildInformationTest
     {
         //given
         final String revision = "";
-        setupJobExpectations(revision, false, Optional.empty(), 10 , 1, 0);
+        setupJobExpectations(revision, false, Optional.empty(), 10, 1, 0);
 
         //when
         jobChecker.run();
@@ -153,7 +153,7 @@ public class GetLatestJobBuildInformationTest
         jobChecker.run();
 
         //then
-        verify(jobTestResultsDao).addTestResults(revision, 4, 1, 1, timestamp, duration);
+        verify(jobTestResultsDao).addTestResults(jobName, revision, 4, 1, 1, timestamp, duration);
     }
 
     @Test
@@ -275,12 +275,12 @@ public class GetLatestJobBuildInformationTest
         revisionActions.put("lastBuiltRevision", revisions);
         final Map<Object, Object> testResults = new HashMap<>();
         testReport.ifPresent(test ->
-                        {
-                            testResults.put("failCount", test.failCount);
-                            testResults.put("skipCount", test.skipCount);
-                            testResults.put("totalCount", test.totalCount);
-                            testResults.put("urlName", "testReport");
-                        });
+                             {
+                                 testResults.put("failCount", test.failCount);
+                                 testResults.put("skipCount", test.skipCount);
+                                 testResults.put("totalCount", test.totalCount);
+                                 testResults.put("urlName", "testReport");
+                             });
         final List<Map<Object, Object>> actions = Arrays.asList(revisionActions, testResults);
         final BuildChangeSet buildChangeSet = new BuildChangeSet();
         buildChangeSet.setItems(Collections.emptyList());

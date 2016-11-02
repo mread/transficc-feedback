@@ -84,7 +84,7 @@ public class GetLatestJobBuildInformation implements Runnable
                                                    final int total = testResults.getFailCount() + testResults.getPassCount() + testResults.getSkipCount();
                                                    final ZonedDateTime startTime = ZonedDateTime.of(LocalDateTime.ofInstant(Instant.ofEpochMilli(buildInformation.getTimestamp()),
                                                                                                                             ZoneOffset.UTC), ZoneOffset.UTC);
-                                                   jobTestResultsDao.addTestResults(buildInformation.getRevision(), total, testResults.getPassCount(), testResults.getFailCount(),
+                                                   jobTestResultsDao.addTestResults(job.getName(), buildInformation.getRevision(), total, testResults.getPassCount(), testResults.getFailCount(),
                                                                                     startTime, buildInformation.getDuration());
                                                }
                                            });
