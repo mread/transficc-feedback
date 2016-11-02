@@ -106,7 +106,8 @@ public class JenkinsFacade
                                                                  jobCompletionPercentage,
                                                                  comments,
                                                                  buildDetails.isBuilding(),
-                                                                 testResults));
+                                                                 testResults,
+                                                                 buildDetails.getDuration()));
             }
         }
         catch (final IOException e)
@@ -156,7 +157,8 @@ public class JenkinsFacade
         private final String[] comments;
         private final boolean building;
         private final TestResults testResults;
-        private long timestamp;
+        private final long duration;
+        private final long timestamp;
 
         public LatestBuildInformation(final String revision,
                                       final JobStatus jobStatus,
@@ -165,7 +167,7 @@ public class JenkinsFacade
                                       final double jobCompletionPercentage,
                                       final String[] comments,
                                       final boolean building,
-                                      final TestResults testResults)
+                                      final TestResults testResults, final long duration)
         {
             this.revision = revision;
             this.jobStatus = jobStatus;
@@ -175,6 +177,7 @@ public class JenkinsFacade
             this.comments = comments;
             this.building = building;
             this.testResults = testResults;
+            this.duration = duration;
         }
 
         public String getRevision()
@@ -215,6 +218,11 @@ public class JenkinsFacade
         public long getTimestamp()
         {
             return timestamp;
+        }
+
+        public long getDuration()
+        {
+            return duration;
         }
     }
 

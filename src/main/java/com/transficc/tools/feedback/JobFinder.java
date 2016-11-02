@@ -36,8 +36,6 @@ public class JobFinder implements Runnable
     {
         final Result<Integer, List<Job>> result = jenkinsFacade.getAllJobs(name -> !jobService.jobExists(name));
         result.consume(statusCode -> LOGGER.error("Received status code {} when trying to obtain jobs", statusCode),
-                       jobs ->
-                               jobs.stream()
-                                       .forEach(jobService::add));
+                       jobs -> jobs.forEach(jobService::add));
     }
 }

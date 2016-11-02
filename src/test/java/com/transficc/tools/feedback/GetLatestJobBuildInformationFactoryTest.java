@@ -1,5 +1,6 @@
 package com.transficc.tools.feedback;
 
+import com.transficc.tools.feedback.dao.JobTestResultsDao;
 import com.transficc.tools.feedback.messaging.MessageBus;
 
 import org.junit.Test;
@@ -12,7 +13,8 @@ public class GetLatestJobBuildInformationFactoryTest
 {
     private final JenkinsFacade jenkinsFacade = Mockito.mock(JenkinsFacade.class);
     private final MessageBus messageBus = Mockito.mock(MessageBus.class);
-    private final GetLatestJobBuildInformationFactory factory = new GetLatestJobBuildInformationFactory(jenkinsFacade, messageBus, new String[]{"SpecialJob"});
+    private final JobTestResultsDao jobTestResultsDao = Mockito.mock(JobTestResultsDao.class);
+    private final GetLatestJobBuildInformationFactory factory = new GetLatestJobBuildInformationFactory(jenkinsFacade, messageBus, new String[]{"SpecialJob"}, jobTestResultsDao);
 
     @Test
     public void shouldCreateARunnableThatShouldPersistsTestInformation()

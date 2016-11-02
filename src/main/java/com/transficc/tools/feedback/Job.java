@@ -38,6 +38,7 @@ public class Job
     private volatile boolean building;
     private volatile TestResults jobsTestResults;
     private volatile long timestamp;
+    private volatile boolean hasJustCompleted;
 
     public Job(final String name, final String url, final int priority, final JobStatus jobStatus, final boolean shouldDisplayCommentsForJob, final VersionControl versionControl)
     {
@@ -49,15 +50,8 @@ public class Job
         this.versionControl = versionControl;
     }
 
-    public void maybeUpdateAndPublish(final String revision,
-                                      final JobStatus jobStatus,
-                                      final int buildNumber,
-                                      final long timestamp,
-                                      final double jobCompletionPercentage,
-                                      final MessageBus messageBus,
-                                      final String[] comments,
-                                      final boolean building,
-                                      final TestResults jobsTestResults)
+    void maybeUpdateAndPublish(final String revision, final JobStatus jobStatus, final int buildNumber, final long timestamp, final double jobCompletionPercentage, final MessageBus messageBus,
+                               final String[] comments, final boolean building, final TestResults jobsTestResults)
     {
         if (isThereAnUpdate(revision, jobStatus, buildNumber, jobCompletionPercentage, building))
         {
@@ -68,6 +62,7 @@ public class Job
             this.timestamp = timestamp;
             this.jobCompletionPercentage = jobCompletionPercentage;
             this.comments = shouldDisplayCommentsForJob ? comments : NO_COMMENTS;
+            this.hasJustCompleted = this.building && !building;
             this.building = building;
             messageBus.sendUpdate(this);
         }
@@ -78,11 +73,6 @@ public class Job
         return name;
     }
 
-    public String getUrl()
-    {
-        return url;
-    }
-
     public JobStatus getJobStatus()
     {
         return jobStatus;
@@ -90,11 +80,11 @@ public class Job
 
     public PublishableJob createPublishable()
     {
-        final String revision = getRevision();
+        final String revision = calculateRevision();
         return new PublishableJob(name, url, priority, revision, jobStatus, buildNumber, timestamp, jobCompletionPercentage, comments, building, jobsTestResults);
     }
 
-    private String getRevision()
+    private String calculateRevision()
     {
         final String calculatedRevision;
         switch (versionControl)
@@ -112,7 +102,7 @@ public class Job
     private boolean isThereAnUpdate(final String revision, final JobStatus jobStatus, final int buildNumber, final double jobCompletionPercentage, final boolean building)
     {
         return !this.revision.equals(revision) || this.jobStatus != jobStatus || this.buildNumber != buildNumber ||
-               (this.jobCompletionPercentage != jobCompletionPercentage && !(this.jobCompletionPercentage > 100 && jobCompletionPercentage > 100)) || this.building != building;
+               (Double.compare(this.jobCompletionPercentage, jobCompletionPercentage) != 0 && !(this.jobCompletionPercentage > 100 && jobCompletionPercentage > 100)) || this.building != building;
     }
 
     @Override
@@ -131,4 +121,8 @@ public class Job
                '}';
     }
 
+    public boolean hasJustCompleted()
+    {
+        return hasJustCompleted;
+    }
 }

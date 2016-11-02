@@ -29,6 +29,7 @@ import com.fasterxml.jackson.annotation.PropertyAccessor;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.offbytwo.jenkins.JenkinsServer;
 import com.transficc.tools.feedback.dao.IterationDao;
+import com.transficc.tools.feedback.dao.JobTestResultsDao;
 import com.transficc.tools.feedback.messaging.JobUpdateSubscriber;
 import com.transficc.tools.feedback.messaging.MessageBus;
 import com.transficc.tools.feedback.routes.Routes;
@@ -82,8 +83,10 @@ public class FeedbackMain
         final MessageBus messageBus = new MessageBus(messageQueue);
         final JenkinsFacade jenkinsFacade = new JenkinsFacade(jenkins, new JobPrioritiesRepository(feedbackProperties.getJobsWithPriorities()), feedbackProperties.getMasterJobName(),
                                                               clockService, feedbackProperties.getVersionControl());
+        final JobTestResultsDao jobTestResultsDao = new JobTestResultsDao(dataSource);
         final JobService jobService = new JobService(jobRepository, messageBus, scheduledExecutorService,
-                                                     new GetLatestJobBuildInformationFactory(jenkinsFacade, messageBus, feedbackProperties.getJobNamesForTestResultsToPersist()));
+                                                     new GetLatestJobBuildInformationFactory(jenkinsFacade, messageBus, feedbackProperties.getJobNamesForTestResultsToPersist(),
+                                                                                             jobTestResultsDao));
         final IterationRepository iterationRepository = new IterationRepository(messageBus, new IterationDao(dataSource));
         Routes.setup(server, jobRepository, iterationRepository, new BreakingNewsService(messageBus), webSocketPublisher, Router.router(vertx), startUpTime);
         final JobFinder jobFinder = new JobFinder(jobService, jenkinsFacade);

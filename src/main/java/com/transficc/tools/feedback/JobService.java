@@ -22,9 +22,9 @@ import com.transficc.tools.feedback.messaging.MessageBus;
 
 public class JobService
 {
+    private final Map<String, ScheduledFuture<?>> jobNameToScheduledRunnable = new ConcurrentHashMap<>();
     private final JobRepository jobRepository;
     private final MessageBus messageBus;
-    private final Map<String, ScheduledFuture<?>> jobNameToScheduledRunnable;
     private final ScheduledExecutorService scheduledExecutorService;
     private final GetLatestJobBuildInformationFactory getLatestJobBuildInformationFactory;
 
@@ -35,7 +35,6 @@ public class JobService
         this.messageBus = messageBus;
         this.scheduledExecutorService = scheduledExecutorService;
         this.getLatestJobBuildInformationFactory = getLatestJobBuildInformationFactory;
-        jobNameToScheduledRunnable = new ConcurrentHashMap<>();
     }
 
     public void onJobNotFound(final String jobName)

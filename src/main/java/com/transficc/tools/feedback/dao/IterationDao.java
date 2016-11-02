@@ -22,6 +22,6 @@ public class IterationDao
 
     public String getIteration()
     {
-        return jdbcTemplate.queryForObject("SELECT name FROM iteration where id = ?", String.class, ITERATION_KEY);
+        return jdbcTemplate.queryForObject("SELECT name FROM iteration WHERE id = ?", String.class, ITERATION_KEY);
     }
 }

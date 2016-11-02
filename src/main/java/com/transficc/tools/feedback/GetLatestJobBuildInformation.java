@@ -12,7 +12,13 @@
  */
 package com.transficc.tools.feedback;
 
+import java.time.Instant;
+import java.time.LocalDateTime;
+import java.time.ZoneOffset;
+import java.time.ZonedDateTime;
+
 import com.transficc.functionality.Result;
+import com.transficc.tools.feedback.dao.JobTestResultsDao;
 import com.transficc.tools.feedback.messaging.MessageBus;
 
 import org.slf4j.Logger;
@@ -26,14 +32,21 @@ public class GetLatestJobBuildInformation implements Runnable
     private final MessageBus messageBus;
     private final JenkinsFacade jenkinsFacade;
     private final JobService jobService;
+    private final JobTestResultsDao jobTestResultsDao;
 
-    public GetLatestJobBuildInformation(final MessageBus messageBus, final JobService jobService, final Job job, final JenkinsFacade jenkinsFacade, final boolean shouldPersistTestResults)
+    public GetLatestJobBuildInformation(final MessageBus messageBus,
+                                        final JobService jobService,
+                                        final Job job,
+                                        final JenkinsFacade jenkinsFacade,
+                                        final boolean shouldPersistTestResults,
+                                        final JobTestResultsDao jobTestResultsDao)
     {
         this.messageBus = messageBus;
         this.jenkinsFacade = jenkinsFacade;
         this.jobService = jobService;
         this.job = job;
         this.shouldPersistTestResults = shouldPersistTestResults;
+        this.jobTestResultsDao = jobTestResultsDao;
     }
 
     @Override
@@ -64,6 +77,16 @@ public class GetLatestJobBuildInformation implements Runnable
                                                                          buildInformation.getComments(),
                                                                          buildInformation.isBuilding(),
                                                                          buildInformation.getTestResults());
+
+                                               if (job.hasJustCompleted() && shouldPersistTestResults)
+                                               {
+                                                   final JenkinsFacade.TestResults testResults = buildInformation.getTestResults();
+                                                   final int total = testResults.getFailCount() + testResults.getPassCount() + testResults.getSkipCount();
+                                                   final ZonedDateTime startTime = ZonedDateTime.of(LocalDateTime.ofInstant(Instant.ofEpochMilli(buildInformation.getTimestamp()),
+                                                                                                                            ZoneOffset.UTC), ZoneOffset.UTC);
+                                                   jobTestResultsDao.addTestResults(buildInformation.getRevision(), total, testResults.getPassCount(), testResults.getFailCount(),
+                                                                                    startTime, buildInformation.getDuration());
+                                               }
                                            });
         }
         catch (final RuntimeException e)

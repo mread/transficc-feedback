@@ -23,6 +23,7 @@ import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
 import com.offbytwo.jenkins.JenkinsServer;
+import com.transficc.tools.feedback.dao.JobTestResultsDao;
 import com.transficc.tools.feedback.messaging.MessageBus;
 import com.transficc.tools.feedback.messaging.PublishableJob;
 import com.transficc.tools.feedback.routes.websocket.OutboundWebSocketFrame;
@@ -47,6 +48,8 @@ public class JobFinderTest
     private JenkinsServer jenkins;
     @Mock
     private ScheduledExecutorService scheduledExecutorService;
+    @Mock
+    private JobTestResultsDao jobTestResultsDao;
     @SuppressWarnings("rawtypes")
     @Mock
     private ScheduledFuture scheduledFuture;
@@ -63,7 +66,8 @@ public class JobFinderTest
         final LinkedBlockingQueue<OutboundWebSocketFrame> messageBusQueue = new LinkedBlockingQueue<>();
         final MessageBus messageBus = new MessageBus(messageBusQueue);
         final JenkinsFacade jenkinsFacade = new JenkinsFacade(jenkins, new JobPrioritiesRepository(Collections.emptyMap()), "", () -> 10, VersionControl.GIT);
-        jobFinder = new JobFinder(new JobService(jobRepository, messageBus, scheduledExecutorService, new GetLatestJobBuildInformationFactory(jenkinsFacade, messageBus, new String[0])),
+        jobFinder = new JobFinder(new JobService(jobRepository, messageBus, scheduledExecutorService, new GetLatestJobBuildInformationFactory(jenkinsFacade, messageBus, new String[0],
+                                                                                                                                              jobTestResultsDao)),
                                   jenkinsFacade);
     }
 

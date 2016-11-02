@@ -85,7 +85,7 @@ public class JobTest
     }
 
     @Test
-    public void shouldNotRuncateRevisionIfVersionControlIsSvn()
+    public void shouldNotTruncateRevisionIfVersionControlIsSvn()
     {
         final Job job = new Job("tom", "url", 3, JobStatus.SUCCESS, false, VersionControl.SVN);
         job.maybeUpdateAndPublish("revision21", JobStatus.SUCCESS, 2, 1468934838586L, 0, messageBus, new String[0], false, null);
@@ -93,5 +93,38 @@ public class JobTest
         final PublishableJob publishable = job.createPublishable();
 
         assertThat(publishable.getRevision(), is("revision21"));
+    }
+
+    @Test
+    public void shouldShouldReturnTrueIfJobWasPreviouslyBuilding()
+    {
+        job.maybeUpdateAndPublish("revision2", JobStatus.SUCCESS, 2, 1468934838586L, 10, messageBus, new String[0], true, null);
+        job.maybeUpdateAndPublish("revision2", JobStatus.SUCCESS, 2, 1468934838586L, 10, messageBus, new String[0], false, null);
+
+        final boolean isComplete = job.hasJustCompleted();
+
+        assertThat(isComplete, is(true));
+    }
+
+    @Test
+    public void shouldReturnFalseIfJobIsStillBuilding()
+    {
+        job.maybeUpdateAndPublish("revision2", JobStatus.SUCCESS, 2, 1468934838586L, 10, messageBus, new String[0], true, null);
+        job.maybeUpdateAndPublish("revision2", JobStatus.SUCCESS, 2, 1468934838586L, 10, messageBus, new String[0], true, null);
+
+        final boolean isComplete = job.hasJustCompleted();
+
+        assertThat(isComplete, is(false));
+    }
+
+    @Test
+    public void shouldReturnFalseIfTheJobHasJustStartedToBeBuilt()
+    {
+        job.maybeUpdateAndPublish("revision2", JobStatus.SUCCESS, 2, 1468934838586L, 10, messageBus, new String[0], false, null);
+        job.maybeUpdateAndPublish("revision2", JobStatus.SUCCESS, 2, 1468934838586L, 10, messageBus, new String[0], true, null);
+
+        final boolean isComplete = job.hasJustCompleted();
+
+        assertThat(isComplete, is(false));
     }
 }
